@@ -101,7 +101,7 @@ class IbanControllerTest {
     void getIban_ok() throws Exception {
         IbanDTO ibanDTO = new IbanDTO(IBAN_OK,DESCRIPTION_OK,HOLDER_BANK_OK, CHANNEL_OK);
 
-        Mockito.when(ibanServiceMock.getIban(INITIATIVE_ID_OK, USER_ID_OK))
+        Mockito.when(ibanServiceMock.getCurrentIban(INITIATIVE_ID_OK, USER_ID_OK))
             .thenReturn(ibanDTO);
 
         mvc.perform(
@@ -116,7 +116,7 @@ class IbanControllerTest {
         Mockito.doThrow(new IbanException(HttpStatus.NOT_FOUND.value(),
                 String.format("Iban with initiativeId %s and userId %s not found.", INITIATIVE_ID_OK,
                     USER_ID_OK)))
-            .when(ibanServiceMock).getIban(INITIATIVE_ID_OK, USER_ID_OK);
+            .when(ibanServiceMock).getCurrentIban(INITIATIVE_ID_OK, USER_ID_OK);
 
         mvc.perform(
                 MockMvcRequestBuilders.get(BASE_URL + "/" + INITIATIVE_ID_OK + "/" + USER_ID_OK)

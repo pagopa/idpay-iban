@@ -17,7 +17,7 @@ public class IbanModel {
         this.userId = userId;
         this.initiativeId = initiativeId;
         this.ibanCode = iban;
-        this.channel = "APP-IO";
+        this.channel = "APP_IO";
         this.description = description;
         this.holderBank = "Unicredit";
     }

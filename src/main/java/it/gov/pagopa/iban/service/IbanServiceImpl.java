@@ -37,10 +37,10 @@ public class IbanServiceImpl implements IbanService {
     }
 
     @Override
-    public IbanDTO getIban(String initiativeId, String userId) {
-        IbanModel ibanSetted = ibanRepository.findByInitiativeIdAndUserIdAndEnabledTrue(initiativeId,userId).orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(),
+    public IbanDTO getCurrentIban(String initiativeId, String userId) {
+        IbanModel currentIban = ibanRepository.findByInitiativeIdAndUserIdAndEnabledTrue(initiativeId,userId).orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(),
                 String.format("Iban for initiativeId %s and userId %s not found.", initiativeId, userId)));
-        return new IbanDTO(ibanSetted.getIbanCode(), ibanSetted.getDescription(), ibanSetted.getHolderBank(), ibanSetted.getChannel());
+        return new IbanDTO(currentIban.getIbanCode(), currentIban.getDescription(), currentIban.getHolderBank(), currentIban.getChannel());
     }
 
     private void formalControl(String iban){

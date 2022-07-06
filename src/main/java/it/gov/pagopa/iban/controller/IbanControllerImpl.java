@@ -25,7 +25,7 @@ public class IbanControllerImpl implements IbanController {
 
     @Override
     public ResponseEntity<IbanDTO> getIban(String userId, String initiativeId) {
-        IbanDTO ibanDTO = ibanService.getIban(userId, initiativeId);
+        IbanDTO ibanDTO = ibanService.getCurrentIban(userId, initiativeId);
         return new ResponseEntity<>(ibanDTO, HttpStatus.OK);
     }
 }

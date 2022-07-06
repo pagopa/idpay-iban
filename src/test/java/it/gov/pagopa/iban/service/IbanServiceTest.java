@@ -4,7 +4,6 @@ import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
-import org.iban4j.CountryCode;
 import org.iban4j.IbanFormatException;
 import org.iban4j.InvalidCheckDigitException;
 import org.iban4j.UnsupportedCountryException;
@@ -49,7 +48,7 @@ class IbanServiceTest {
     private static final String IBAN_WRONG = "it99C1234567890123456789012222";
     private static final String IBAN_WRONG_2 = "IT09P3608105138205493205496";
     private static final String DESCRIPTION_OK = "conto cointestato";
-    private static final String CHANNEL_OK = "APP-IO";
+    private static final String CHANNEL_OK = "APP_IO";
     private static final String HOLDER_BANK_OK = "Unicredit";
 
     @Test
@@ -149,7 +148,7 @@ class IbanServiceTest {
 
         Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserIdAndEnabledTrue(INITIATIVE_ID_OK, USER_ID_OK))
                 .thenReturn(Optional.of(iban));
-        ibanService.getIban(INITIATIVE_ID_OK, USER_ID_OK);
+        ibanService.getCurrentIban(INITIATIVE_ID_OK, USER_ID_OK);
 
         assertEquals(ibanDTO.getIban(), iban.getIbanCode());
 
@@ -160,7 +159,7 @@ class IbanServiceTest {
         Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserIdAndEnabledTrue(INITIATIVE_ID, USER_ID))
                 .thenReturn(Optional.empty());
         try {
-            ibanService.getIban(INITIATIVE_ID, USER_ID);
+            ibanService.getCurrentIban(INITIATIVE_ID, USER_ID);
         } catch (IbanException e) {
             assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
         }
