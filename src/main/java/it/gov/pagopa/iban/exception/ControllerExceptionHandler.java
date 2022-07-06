@@ -3,6 +3,9 @@ package it.gov.pagopa.iban.exception;
 import it.gov.pagopa.iban.dto.ErrorDTO;
 import java.util.ArrayList;
 import java.util.List;
+import org.iban4j.IbanFormatException;
+import org.iban4j.InvalidCheckDigitException;
+import org.iban4j.UnsupportedCountryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,6 +20,24 @@ public class ControllerExceptionHandler {
     public ResponseEntity<ErrorDTO> handleException(IbanException ex) {
         return new ResponseEntity<>(new ErrorDTO(ex.getCode(), ex.getMessage()),
                 HttpStatus.valueOf(ex.getCode()));
+    }
+
+    @ExceptionHandler({InvalidCheckDigitException.class})
+    public ResponseEntity<ErrorDTO> handleInvalidCheckDigitException(InvalidCheckDigitException ex) {
+        return new ResponseEntity<>(new ErrorDTO(400, ex.getMessage()),
+            HttpStatus.valueOf(400));
+    }
+
+    @ExceptionHandler({IbanFormatException.class})
+    public ResponseEntity<ErrorDTO> handleIbanFormatException(IbanFormatException ex) {
+        return new ResponseEntity<>(new ErrorDTO(400, ex.getMessage()),
+            HttpStatus.valueOf(400));
+    }
+
+    @ExceptionHandler({UnsupportedCountryException.class})
+    public ResponseEntity<ErrorDTO> handleUnsupportedCountryException(UnsupportedCountryException ex) {
+        return new ResponseEntity<>(new ErrorDTO(400, ex.getMessage()),
+            HttpStatus.valueOf(400));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
