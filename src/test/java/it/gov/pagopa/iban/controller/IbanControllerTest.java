@@ -10,7 +10,7 @@ import it.gov.pagopa.iban.dto.ErrorDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanPutDTO;
 import it.gov.pagopa.iban.exception.IbanException;
-import it.gov.pagopa.iban.model.Iban;
+import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.service.IbanService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(value = {
         IbanController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -43,7 +40,7 @@ class IbanControllerTest {
     protected MockMvc mvc;
 
     private static final Logger LOG = LoggerFactory.getLogger(
-            Iban.class);
+            IbanModel.class);
 
     private static final String BASE_URL = "http://localhost:8080/idpay/iban";
     private static final String ENROLLMENT_IBAN_URL = "/enroll";
@@ -51,8 +48,9 @@ class IbanControllerTest {
     private static final String INITIATIVE_ID_OK = "123";
     private static final String IBAN_OK = "it99C1234567890123456789012";
     private static final String IBAN_WRONG = "it99C1234567890123456789012222";
-    private static final String CHANNEL = "Unicredit";
+    private static final String CHANNEL_OK = "APP-IO";
     private static final String DESCRIPTION_OK = "conto cointestato";
+    private static final String HOLDER_BANK_OK = "Unicredit";
 
     private static final IbanPutDTO IBAN_BODY_DTO_EMPTY = new IbanPutDTO("","","","");
 
@@ -101,7 +99,7 @@ class IbanControllerTest {
 
     @Test
     void getIban_ok() throws Exception {
-        IbanDTO ibanDTO = new IbanDTO(IBAN_OK,DESCRIPTION_OK,CHANNEL);
+        IbanDTO ibanDTO = new IbanDTO(IBAN_OK,DESCRIPTION_OK,HOLDER_BANK_OK, CHANNEL_OK);
 
         Mockito.when(ibanServiceMock.getIban(INITIATIVE_ID_OK, USER_ID_OK))
             .thenReturn(ibanDTO);

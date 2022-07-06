@@ -9,5 +9,6 @@ import lombok.*;
 public class IbanDTO {
     String iban;
     String description;
+    String holderBank;
     String channel;
 }

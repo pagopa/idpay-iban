@@ -11,9 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Document(collection = "enrollment_iban")
 @CompoundIndex(name = "iban_unique_idx", def = "{'userId': 1, 'initiativeId': 1, 'iban': 1}}", unique = true)
-public class Iban {
+public class IbanModel {
 
-    public Iban(String userId, String initiativeId, String iban, String description) {
+    public IbanModel(String userId, String initiativeId, String iban, String description) {
         this.userId = userId;
         this.initiativeId = initiativeId;
         this.ibanCode = iban;
