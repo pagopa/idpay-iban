@@ -1,38 +1,24 @@
 package it.gov.pagopa.iban.model;
 
-import java.time.LocalDateTime;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Getter
 @NoArgsConstructor
-@Document(collection = "enrollment_iban")
-@CompoundIndex(name = "iban_unique_idx", def = "{'userId': 1, 'initiativeId': 1, 'iban': 1}}", unique = true)
+@Document(collection = "iban")
 public class IbanModel {
-
-    public IbanModel(String userId, String initiativeId, String iban, String description) {
-        this.userId = userId;
-        this.initiativeId = initiativeId;
-        this.ibanCode = iban;
-        this.channel = "APP_IO";
-        this.description = description;
-        this.holderBank = "Unicredit";
-    }
 
     @Id
     private String id;
     private String userId;
-    private String initiativeId;
-    private String ibanCode;
-    private String channel;
-    private String description;
-    private String holderBank;
-    private boolean enabled;
+    private String iban;
     private String checkIbanStatus;
-    private LocalDateTime insertIbanTimestamp;
-    private LocalDateTime deleteIbanTimestamp;
-    private LocalDateTime checkIbanTimestamp;
+
+    public IbanModel(String userId, String iban, String checkIbanStatus) {
+        this.userId = userId;
+        this.iban = iban;
+        this.checkIbanStatus = checkIbanStatus;
+    }
 }
