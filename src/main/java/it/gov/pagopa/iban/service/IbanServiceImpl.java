@@ -62,7 +62,9 @@ public class IbanServiceImpl implements IbanService {
                 ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
                 ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
         }else{
-                ibanModel.setCheckIbanStatus(checkIbanDTO.getStatus()+"-"+checkIbanDTO.getErrors().get(0).getDescription());
+                ibanModel.setCheckIbanStatus(checkIbanDTO.getStatus());
+                ibanModel.setErrorCode(checkIbanDTO.getErrors().get(0).getCode());
+                ibanModel.setErrorDescription(checkIbanDTO.getErrors().get(0).getDescription());
             }
         ibanRepository.save(ibanModel);
     }

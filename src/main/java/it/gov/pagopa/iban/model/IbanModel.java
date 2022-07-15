@@ -18,6 +18,8 @@ public class IbanModel {
     private String userId;
     private String iban;
     private String checkIbanStatus;
+    private String errorCode;
+    private String errorDescription;
     private String bicCode;
     private String holderBank;
 
