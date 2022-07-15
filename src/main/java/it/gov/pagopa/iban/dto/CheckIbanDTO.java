@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CheckIbanDTO {
   private String status;
-  private List<String> errors;
+  private List<ErrorCheckIbanDTO> errors;
   private PayloadCheckIbanDTO payload;
 
 }

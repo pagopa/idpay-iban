@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 public class CheckIbanRestConnectorImpl implements CheckIbanRestConnector {
   private final String apikey;
   private final String authSchema;
-  //private final CheckIbanRestClient checkIbanRestClient;
   private final CheckIbanRestClientMock checkIbanRestClientMock;
   private static final String IBAN="IBAN";
   private static final String PERSON_NATURAL="PERSON_NATURAL";
