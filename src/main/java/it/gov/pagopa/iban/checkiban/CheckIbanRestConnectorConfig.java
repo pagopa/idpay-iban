@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 //@Import(RestConnectorConfig.class)
-@EnableFeignClients(clients = CheckIbanRestClientMock.class)
+@EnableFeignClients(clients = CheckIbanRestClient.class)
 @Slf4j
 public class CheckIbanRestConnectorConfig {
   @Configuration

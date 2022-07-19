@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckIbanDTO {
+public class ResponseCheckIbanDTO {
   private String status;
   private List<ErrorCheckIbanDTO> errors;
   private PayloadCheckIbanDTO payload;

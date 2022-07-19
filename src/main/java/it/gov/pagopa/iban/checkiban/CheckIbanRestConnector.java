@@ -1,9 +1,9 @@
 package it.gov.pagopa.iban.checkiban;
 
-import it.gov.pagopa.iban.dto.CheckIbanDTO;
+import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface CheckIbanRestConnector {
-  CheckIbanDTO checkIban(String payOffInstr, String fiscalCode);
+  ResponseCheckIbanDTO checkIban(String payOffInstr, String fiscalCode);
 }

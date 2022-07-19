@@ -1,46 +1,41 @@
 package it.gov.pagopa.iban.checkiban;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.iban.dto.CheckIbanDTO;
+import it.gov.pagopa.iban.dto.RequestCheckIbanDTO;
+import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.model.IbanModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+@Slf4j
 @Service
 public class CheckIbanRestConnectorImpl implements CheckIbanRestConnector {
   private final String apikey;
   private final String authSchema;
-  private final CheckIbanRestClientMock checkIbanRestClientMock;
+  private final CheckIbanRestClient checkIbanRestClient;
   private static final String IBAN="IBAN";
   private static final String PERSON_NATURAL="PERSON_NATURAL";
 
   public CheckIbanRestConnectorImpl(
       @Value("${rest-client.checkiban.apikey}") String apikey,
       @Value("${rest-client.checkiban.authSchema}") String authSchema,
-      CheckIbanRestClientMock checkIbanRestClientMock) {
+      CheckIbanRestClient checkIbanRestClient) {
     this.apikey = apikey;
     this.authSchema = authSchema;
-    this.checkIbanRestClientMock = checkIbanRestClientMock;
+    this.checkIbanRestClient = checkIbanRestClient;
   }
 
 
   @Override
-  public CheckIbanDTO checkIban(String payOffInstr, String fiscalCode) {
-    String responseMock = checkIbanRestClientMock.checkIban();
-    if(responseMock!=null ){
-      return this.convertToJson(responseMock);
-    }
-    return null;
-  }
-
-  private CheckIbanDTO convertToJson(String string) {
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      CheckIbanDTO checkIbanDTO = mapper.readValue(string, CheckIbanDTO.class);
-      return checkIbanDTO;
-    }catch(Exception exception){
-      exception.printStackTrace();
-      return new CheckIbanDTO();
-    }
+  public ResponseCheckIbanDTO checkIban(String payOffInstr, String fiscalCode) {
+    RequestCheckIbanDTO requestCheckIbanDTO=new RequestCheckIbanDTO();
+    requestCheckIbanDTO.getAccount().setValue(payOffInstr);
+    requestCheckIbanDTO.getAccount().setValueType(IBAN);
+    requestCheckIbanDTO.getAccountHolder().setType(PERSON_NATURAL);
+    requestCheckIbanDTO.getAccountHolder().setFiscalCode(fiscalCode);
+    log.info("Chiamata al checkiban con iban:"+payOffInstr+", codice fiscale: "+fiscalCode);
+    ResponseCheckIbanDTO response = checkIbanRestClient.checkIban(requestCheckIbanDTO, apikey, authSchema);
+    log.info(response.toString());
+    return response;
   }
 
 }

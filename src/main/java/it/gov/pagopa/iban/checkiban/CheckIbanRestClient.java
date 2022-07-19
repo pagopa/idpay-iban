@@ -1,6 +1,7 @@
 package it.gov.pagopa.iban.checkiban;
 
-import it.gov.pagopa.iban.dto.CheckIbanDTO;
+import it.gov.pagopa.iban.dto.RequestCheckIbanDTO;
+import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.model.IbanModel;
 import javax.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public interface CheckIbanRestClient {
   @PostMapping(value = "${rest-client.checkiban.url}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  IbanModel checkIban(@RequestBody @Valid CheckIbanDTO checkIbanDTO,
+  ResponseCheckIbanDTO checkIban(@RequestBody @Valid RequestCheckIbanDTO requestCheckIbanDTO,
       @RequestHeader("apikey") String apikey,
       @RequestHeader("Auth-Schema") String authSchema);
 }
