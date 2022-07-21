@@ -2,7 +2,6 @@ package it.gov.pagopa.iban.event;
 
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.service.IbanService;
-import it.gov.pagopa.iban.service.IbanServiceImpl;
 import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
