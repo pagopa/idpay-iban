@@ -84,16 +84,29 @@ microservice-chart:
     APPLICATIONINSIGHTS_ROLE_NAME: "idpayiban"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
+    CHECKIBAN_SERVICE_CODE: checkiban
 
   envConfigMapExternals:
     idpay-common:
       TZ: tz
       JAVA_TOOL_OPTIONS: java_tool_options
-      
+    rest-client:
+      CHECKIBAN_BASE_URL: checkiban_base_url
+      CHECKIBAN_URL: checkiban_url
+    idpay-eventhub-00:
+      KAFKA_BINDER_BROKER_ENDPOINT_LIST: kafka_broker
+      KAFKA_IBAN_SASL_MECHANISM: kafka_sasl_mechanism
+      KAFKA_IBAN_SECURITY_PROTOCOL: kafka_security_protocol
+      KAFKA_TOPIC_IBAN: idpay_checkiban_evaluation_topic
+      KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-eval-consumer-group
+
   envSecret:
     aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
     MONGODB_URI: mongodb-connection-string
 #    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-instrumentation-key
+    KAFKA_IBAN_SASL_JAAS_CONFIG: evh-idpay-checkiban-evaluation-idpay-checkiban-evaluation-consumer-jaas-config-idpay-00
+    CHECKIBAN_API_KEY: checkiban-api-key
+    CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
 
   keyvault:
     name: "cstar-d-idpay-kv"
