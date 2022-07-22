@@ -1,7 +1,12 @@
 package it.gov.pagopa.iban.service;
 
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonpCharacterEscapes;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.gov.pagopa.iban.checkiban.CheckIbanRestConnector;
+import it.gov.pagopa.iban.constants.IbanConstants;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
@@ -54,16 +59,25 @@ public class IbanServiceImpl implements IbanService {
                 ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
             }
         }catch(FeignException e){
-            log.info("Risposta con eccezione checkIban:"+e.getMessage());
+            log.info("exception: "+e.getMessage());
+            ObjectMapper mapper = new ObjectMapper();
+            String errorDescription;
+            try {
+                ResponseCheckIbanDTO responseCheckIbanDTO = mapper.readValue(e.contentUTF8(),
+                    ResponseCheckIbanDTO.class);
+                errorDescription =responseCheckIbanDTO.getErrors().get(0).getDescription();
+            }catch (JacksonException exception){
+                errorDescription=e.contentUTF8();
+            }
             ibanModel.setErrorCode(String.valueOf(e.status()));
             ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
-            ibanModel.setErrorDescription(e.getMessage());
+            ibanModel.setErrorDescription(errorDescription);
             switch (e.status()) {
                 case 501,502:
-                    ibanModel.setCheckIbanStatus("UNKNOWN PSP");
+                    ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
                     break;
                 default:
-                    ibanModel.setCheckIbanStatus("KO");
+                    ibanModel.setCheckIbanStatus(IbanConstants.KO);
             }
         }
         ibanRepository.save(ibanModel);
