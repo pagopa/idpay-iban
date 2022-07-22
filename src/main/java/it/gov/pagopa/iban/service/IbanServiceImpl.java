@@ -61,15 +61,18 @@ public class IbanServiceImpl implements IbanService {
         }catch(FeignException e){
             log.info("exception: "+e.getMessage());
             ObjectMapper mapper = new ObjectMapper();
+            String errorCode;
             String errorDescription;
             try {
                 ResponseCheckIbanDTO responseCheckIbanDTO = mapper.readValue(e.contentUTF8(),
                     ResponseCheckIbanDTO.class);
+                errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
                 errorDescription =responseCheckIbanDTO.getErrors().get(0).getDescription();
             }catch (JacksonException exception){
+                errorCode =String.valueOf(e.status());
                 errorDescription=e.contentUTF8();
             }
-            ibanModel.setErrorCode(String.valueOf(e.status()));
+            ibanModel.setErrorCode(errorCode);
             ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
             ibanModel.setErrorDescription(errorDescription);
             switch (e.status()) {
