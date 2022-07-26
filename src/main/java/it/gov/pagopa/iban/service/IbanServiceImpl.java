@@ -1,15 +1,15 @@
 package it.gov.pagopa.iban.service;
 
 import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonpCharacterEscapes;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.gov.pagopa.iban.checkiban.CheckIbanRestConnector;
+import it.gov.pagopa.iban.checkiban.DecryptRest;
 import it.gov.pagopa.iban.constants.IbanConstants;
-import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
+import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import java.time.LocalDateTime;
@@ -28,6 +28,9 @@ public class IbanServiceImpl implements IbanService {
 
     @Autowired
     private IbanRepository ibanRepository;
+
+    @Autowired
+    private DecryptRest decryptRest;
 
 
     public List <IbanDTO> getIbanList(String userId) {
@@ -50,7 +53,9 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
 
         try {
-            checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), "TRNFNC96R02H501I");
+            DecryptedCfDTO decryptedCfDTO = decryptRest.getPiiByToken(iban.getUserId());
+            checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+            log.info("CF: "+decryptedCfDTO.getPii());
             if(checkIbanDTO!=null){
                 log.info("Risposta checkIban:"+checkIbanDTO);
                 ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
