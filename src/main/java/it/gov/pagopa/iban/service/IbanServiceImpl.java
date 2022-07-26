@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -31,6 +32,9 @@ public class IbanServiceImpl implements IbanService {
 
     @Autowired
     private DecryptRest decryptRest;
+
+    @Value("${api.key.decrypt}")
+    private String apikey;
 
 
     public List <IbanDTO> getIbanList(String userId) {
@@ -53,7 +57,7 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
 
         try {
-            DecryptedCfDTO decryptedCfDTO = decryptRest.getPiiByToken(iban.getUserId());
+            DecryptedCfDTO decryptedCfDTO = decryptRest.getPiiByToken(iban.getUserId(), apikey);
             checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
             log.info("CF: "+decryptedCfDTO.getPii());
             if(checkIbanDTO!=null){
@@ -80,12 +84,11 @@ public class IbanServiceImpl implements IbanService {
             ibanModel.setErrorCode(errorCode);
             ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
             ibanModel.setErrorDescription(errorDescription);
-            switch (e.status()) {
-                case 501,502:
+            if (e.status()==501 || e.status()==502) {
                     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
-                    break;
-                default:
-                    ibanModel.setCheckIbanStatus(IbanConstants.KO);
+            }else {
+                ibanModel.setCheckIbanStatus(IbanConstants.KO);
+
             }
         }
         ibanRepository.save(ibanModel);

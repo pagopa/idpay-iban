@@ -10,8 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-//@Import(RestConnectorConfig.class)
-@EnableFeignClients(clients = CheckIbanRestClient.class)
+@EnableFeignClients(clients = {CheckIbanRestClient.class, DecryptRest.class})
 @Slf4j
 public class CheckIbanRestConnectorConfig {
   @Configuration
