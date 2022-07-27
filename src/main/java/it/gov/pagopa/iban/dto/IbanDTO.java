@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-
 public class IbanDTO {
   private String iban;
   private String checkIbanStatus;
