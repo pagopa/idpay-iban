@@ -84,7 +84,8 @@ microservice-chart:
     APPLICATIONINSIGHTS_ROLE_NAME: "idpayiban"
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
-    CHECKIBAN_SERVICE_CODE: checkiban
+    CHECKIBAN_SERVICE_CODE: pagopa-checkiban
+    PDV_DECRYPT_SERVICE_CODE: pdv-ms-tokenizer
 
   envConfigMapExternals:
     idpay-common:
@@ -93,6 +94,7 @@ microservice-chart:
     rest-client:
       CHECKIBAN_BASE_URL: checkiban_base_url
       CHECKIBAN_URL: checkiban_url
+      PDV_DECRYPT_BASE_URL: pdv_decrypt_base_url
     idpay-eventhub-00:
       KAFKA_BINDER_BROKER_ENDPOINT_LIST: kafka_broker
       KAFKA_IBAN_SASL_MECHANISM: kafka_sasl_mechanism
@@ -107,6 +109,7 @@ microservice-chart:
     KAFKA_IBAN_SASL_JAAS_CONFIG: evh-idpay-checkiban-evaluation-idpay-checkiban-evaluation-consumer-jaas-config-idpay-00
     CHECKIBAN_API_KEY: checkiban-api-key
     CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
+    PDV_DECRYPT_API_KEY: pdv-api-key
 
   keyvault:
     name: "cstar-d-idpay-kv"

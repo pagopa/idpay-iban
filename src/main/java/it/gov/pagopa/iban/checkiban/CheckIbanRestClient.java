@@ -2,7 +2,6 @@ package it.gov.pagopa.iban.checkiban;
 
 import it.gov.pagopa.iban.dto.RequestCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
-import it.gov.pagopa.iban.model.IbanModel;
 import javax.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
