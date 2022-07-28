@@ -56,8 +56,8 @@ microservice-chart:
       memory: "256Mi"
       cpu: "40m"
     limits:
-      memory: "2Gi"
-      cpu: "200m"
+      memory: "4Gi"
+      cpu: "300m"
 
 #  autoscaling:
 #    enable: true
@@ -86,11 +86,12 @@ microservice-chart:
     APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
     CHECKIBAN_SERVICE_CODE: pagopa-checkiban
     PDV_DECRYPT_SERVICE_CODE: pdv-ms-tokenizer
+    JAVA_TOOL_OPTIONS: '-Xms128m -Xmx4g -javaagent:/app/applicationinsights-agent.jar'
+
 
   envConfigMapExternals:
     idpay-common:
       TZ: tz
-      JAVA_TOOL_OPTIONS: java_tool_options
     rest-client:
       CHECKIBAN_BASE_URL: checkiban_base_url
       CHECKIBAN_URL: checkiban_url
