@@ -1,21 +1,22 @@
 package it.gov.pagopa.iban.controller;
 
 import it.gov.pagopa.iban.dto.IbanDTO;
-import it.gov.pagopa.iban.dto.IbanPutDTO;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/idpay/iban")
 public interface IbanController {
     /**
-     * Enrollment Iban
+     * Get Iban
      *
-     * @param body
+     * @param userId
      * @return
      */
-    @PutMapping("/enroll")
-    ResponseEntity<Void> enrollmentIban(@RequestBody IbanPutDTO body);
-    @GetMapping("/{userId}/{initiativeId}")
-    ResponseEntity<IbanDTO> getIban(@PathVariable("userId") String userId, @PathVariable("initiativeId") String initiativeId);
+    @GetMapping("/{userId}")
+    ResponseEntity<List<IbanDTO>> getIbanList(@PathVariable("userId") String userId);
 }

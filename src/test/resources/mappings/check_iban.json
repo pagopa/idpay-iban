@@ -1,0 +1,37 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/mock/checkiban"
+  },
+  "response": {
+    "status": "200",
+    "jsonBody": {
+      "status": "OK",
+      "errors": [],
+      "payload": {
+        "validationStatus": "OK",
+        "account": {
+          "value": "IT43O0326822300052755845000",
+          "valueType": "IBAN",
+          "bicCode": null
+        },
+        "accountHolder": {
+          "type": "PERSON_NATURAL",
+          "fiscalCode": "TRNFNC96R02H501I",
+          "vatCode": null,
+          "taxCode": null
+        },
+        "bankInfo": {
+          "businessName": "ACCOUNT HOLDER BANK",
+          "city": "ROMA",
+          "countryCode": "IT",
+          "bicCode": "ACCHLDMMXXX",
+          "branchName": "HEAD OFFICE"
+        }
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
