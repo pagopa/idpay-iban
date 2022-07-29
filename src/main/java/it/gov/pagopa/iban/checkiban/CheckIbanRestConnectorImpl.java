@@ -31,7 +31,6 @@ public class CheckIbanRestConnectorImpl implements CheckIbanRestConnector {
     requestCheckIbanDTO.getAccount().setValueType(IBAN);
     requestCheckIbanDTO.getAccountHolder().setType(PERSON_NATURAL);
     requestCheckIbanDTO.getAccountHolder().setFiscalCode(fiscalCode);
-    log.info("Chiamata al checkiban con iban");
     return checkIbanRestClient.checkIban(requestCheckIbanDTO, apikey, authSchema);
   }
 
