@@ -1,4 +1,4 @@
-package it.gov.pagopa.iban.checkiban;
+package it.gov.pagopa.iban.config;
 
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;

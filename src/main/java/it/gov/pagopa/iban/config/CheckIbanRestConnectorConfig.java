@@ -1,5 +1,7 @@
-package it.gov.pagopa.iban.checkiban;
+package it.gov.pagopa.iban.config;
 
+import it.gov.pagopa.iban.checkiban.CheckIbanRestClient;
+import it.gov.pagopa.iban.decrypt.DecryptRest;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

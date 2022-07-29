@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import it.gov.pagopa.iban.checkiban.CheckIbanRestConnector;
-import it.gov.pagopa.iban.checkiban.DecryptRest;
 import it.gov.pagopa.iban.constants.IbanConstants;
+import it.gov.pagopa.iban.decrypt.DecryptRestConnector;
 import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
@@ -19,25 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class IbanServiceImpl implements IbanService {
-
   @Autowired
   private CheckIbanRestConnector checkIbanRestConnector;
-
   @Autowired
   private IbanRepository ibanRepository;
-
   @Autowired
-  private DecryptRest decryptRest;
-
-  @Value("${api.key.decrypt}")
-  private String apikey;
-
+  private DecryptRestConnector decryptRestConnector;
 
   public List<IbanDTO> getIbanList(String userId) {
     List<IbanModel> ibanList = ibanRepository.findByUserId(userId);
@@ -51,7 +43,7 @@ public class IbanServiceImpl implements IbanService {
   }
 
   public void saveIban(IbanQueueDTO iban) {
-    ResponseCheckIbanDTO checkIbanDTO = null;
+    ResponseCheckIbanDTO checkIbanDTO;
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -60,7 +52,7 @@ public class IbanServiceImpl implements IbanService {
     try {
       Instant start = Instant.now();
       log.debug("Calling decrypting service at: " + start);
-      DecryptedCfDTO decryptedCfDTO = decryptRest.getPiiByToken(iban.getUserId(), apikey);
+      DecryptedCfDTO decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
       Instant finish = Instant.now();
       long time = Duration.between(start, finish).toMillis();
       log.info(
