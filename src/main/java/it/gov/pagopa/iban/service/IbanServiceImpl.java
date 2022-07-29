@@ -62,7 +62,7 @@ public class IbanServiceImpl implements IbanService {
       if (checkIbanDTO != null) {
         log.info("CheckIban's answer: " + checkIbanDTO);
         ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
-        ibanModel.setCheckIbanStatus(checkIbanDTO.getStatus());
+        ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
         ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
         ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
       }
