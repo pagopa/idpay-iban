@@ -87,7 +87,6 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
       } else {
         ibanModel.setCheckIbanStatus(IbanConstants.KO);
-
       }
     }
     ibanRepository.save(ibanModel);

@@ -1,11 +1,10 @@
 package it.gov.pagopa.iban.config;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.commons.httpclient.DefaultOkHttpClientFactory;
-
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 
 public class ProxyOkHttpClientFactory extends DefaultOkHttpClientFactory {
   @Value("${rest-client.checkiban.proxy.host}")

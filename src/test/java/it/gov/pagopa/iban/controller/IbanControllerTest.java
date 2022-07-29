@@ -1,7 +1,6 @@
 package it.gov.pagopa.iban.controller;
 
 import it.gov.pagopa.iban.dto.IbanDTO;
-import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.service.IbanService;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,16 +27,9 @@ class IbanControllerTest {
     @Autowired
     protected MockMvc mvc;
 
-    private static final Logger LOG = LoggerFactory.getLogger(
-            IbanModel.class);
-
     private static final String BASE_URL = "http://localhost:8080/idpay/iban";
     private static final String USER_ID_OK = "123";
-    private static final String INITIATIVE_ID_OK = "123";
     private static final String IBAN_OK = "it99C1234567890123456789012";
-    private static final String IBAN_WRONG = "it99C1234567890123456789012222";
-    private static final String CHANNEL_OK = "APP-IO";
-    private static final String DESCRIPTION_OK = "conto cointestato";
     private static final String CHECK_IBAN_STATUS= "UNKNOWN_PSP";
     private static final String HOLDER_BANK_OK = "Unicredit";
     private static final IbanDTO IBAN_DTO = new IbanDTO(IBAN_OK,CHECK_IBAN_STATUS,HOLDER_BANK_OK);

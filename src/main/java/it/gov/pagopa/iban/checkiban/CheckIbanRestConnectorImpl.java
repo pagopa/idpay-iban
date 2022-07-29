@@ -2,7 +2,6 @@ package it.gov.pagopa.iban.checkiban;
 
 import it.gov.pagopa.iban.dto.RequestCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
-import it.gov.pagopa.iban.model.IbanModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,10 +31,8 @@ public class CheckIbanRestConnectorImpl implements CheckIbanRestConnector {
     requestCheckIbanDTO.getAccount().setValueType(IBAN);
     requestCheckIbanDTO.getAccountHolder().setType(PERSON_NATURAL);
     requestCheckIbanDTO.getAccountHolder().setFiscalCode(fiscalCode);
-    log.info("Chiamata al checkiban con iban:"+payOffInstr+", codice fiscale: "+fiscalCode);
-    ResponseCheckIbanDTO response = checkIbanRestClient.checkIban(requestCheckIbanDTO, apikey, authSchema);
-    log.info(response.toString());
-    return response;
+    log.info("Chiamata al checkiban con iban");
+    return checkIbanRestClient.checkIban(requestCheckIbanDTO, apikey, authSchema);
   }
 
 }

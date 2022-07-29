@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import it.gov.pagopa.iban.config.RestConnectorConfig;
 import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,18 +29,20 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
     initializers = DecryptRestTest.WireMockInitializer.class,
     classes = {
         DecryptRestConnectorImpl.class,
+        RestConnectorConfig.class,
         FeignAutoConfiguration.class,
         HttpMessageConvertersAutoConfiguration.class
     })
 @TestPropertySource(
     locations = "classpath:application.properties",
-    properties = "spring.application.name=pdv-ms-tokenizer")
+    properties = "spring.application.name=pdv-ms-tokenizer-decrypt")
 class DecryptRestTest {
     private static final String FISCAL_CODE = "AAAAAA00A00A000A";
     private static final String TOKEN = "TEST_TOKEN";
 
     @Autowired
-    private DecryptRest restClient;
+    private DecryptRest decryptRest;
+
 
     @Autowired
     private DecryptRestConnector restConnector;
