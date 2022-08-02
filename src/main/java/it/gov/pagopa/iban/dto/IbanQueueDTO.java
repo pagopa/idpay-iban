@@ -14,6 +14,8 @@ public class IbanQueueDTO {
 
   private String userId;
   private String iban;
+  private String channel;
+  private String description;
   private String queueDate;
 
 }

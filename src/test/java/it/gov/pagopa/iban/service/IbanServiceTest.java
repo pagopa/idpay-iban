@@ -53,9 +53,11 @@ class IbanServiceTest {
     private static final String HOLDER_BANK_OK = "BANCA SELLA SPA";
     private static final String BIC_CODE= "SELBIT2B";
     private static final String VALIDATION_STATUS = "OK";
+    private static final String CHANNEL= "APP_IO";
+    private static final String DESCRIPTION= "conto intestato";
     private static final IbanModel IBAN_MODEL = new IbanModel(USER_ID,IBAN_OK,CHECK_IBAN_STATUS,BIC_CODE,HOLDER_BANK_OK,LocalDateTime.now());
-    private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID,IBAN_OK,LocalDateTime.now().toString());
-    private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID,IBAN_WRONG,LocalDateTime.now().toString());
+    private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID,IBAN_OK,CHANNEL,DESCRIPTION,LocalDateTime.now().toString());
+    private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID,IBAN_WRONG,CHANNEL,DESCRIPTION,LocalDateTime.now().toString());
     private static final IbanModel IBAN_MODEL_EMPTY = new IbanModel();
     private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_DTO = new AccountCheckIbanDTO(IBAN_OK,"IBAN",BIC_CODE);
     private static final AccountHolderCheckIbanDTO ACCOUNT_HOLDER_CHECK_IBAN_DTO = new AccountHolderCheckIbanDTO("PERSON_NATURAL",USER_ID,"","");
@@ -240,95 +242,4 @@ class IbanServiceTest {
             assertEquals(HttpStatus.BAD_REQUEST.value(), e.status());
         }
     }
-
-//    @Test
-//    void putIban_idemp(){
-//        final IbanModel iban = new IbanModel(INITIATIVE_ID_OK, USER_ID_OK, IBAN_OK, DESCRIPTION_OK);
-//        iban.setEnabled(true);
-//        iban.setInsertIbanTimestamp(LocalDateTime.now());
-//
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserId(INITIATIVE_ID_OK, USER_ID_OK))
-//                .thenReturn(
-//                        List.of(iban));
-//        try {
-//            ibanService.putIban(INITIATIVE_ID_OK, USER_ID_OK, IBAN_OK,DESCRIPTION_OK);
-//        } catch (IbanException e){
-//            Assertions.fail();
-//        }
-//
-//    }
-//
-//    @Test
-//    void putIban_ko_iban_not_italian() {
-//        final IbanModel iban = new IbanModel(INITIATIVE_ID_OK, USER_ID_OK, IBAN_KO_NOT_IT, DESCRIPTION_OK);
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserId(INITIATIVE_ID_OK, USER_ID_OK))
-//                .thenReturn(
-//                        Collections.emptyList());
-//        try {
-//            ibanService.putIban(INITIATIVE_ID_OK, USER_ID_OK, IBAN_KO_NOT_IT, DESCRIPTION_OK);
-//            Assertions.fail();
-//        } catch (UnsupportedCountryException e) {
-//            assertNotNull(e.getMessage());
-//        }
-//
-//    }
-//
-//    @Test
-//    void putIban_ko_iban_wrong() {
-//        final IbanModel iban = new IbanModel(INITIATIVE_ID_OK, USER_ID_OK, IBAN_WRONG, DESCRIPTION_OK);
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserId(INITIATIVE_ID_OK, USER_ID_OK))
-//                .thenReturn(
-//                        Collections.emptyList());
-//        try {
-//            ibanService.putIban(INITIATIVE_ID, USER_ID_OK, IBAN_WRONG, DESCRIPTION_OK);
-//            Assertions.fail();
-//
-//        } catch (IbanFormatException e) {
-//            assertNotNull(e.getMessage());
-//        }
-//
-//    }
-//
-//    @Test
-//    void putIban_ko_iban_digit_controll() {
-//        final IbanModel iban = new IbanModel(INITIATIVE_ID_OK, USER_ID_OK, IBAN_WRONG_2, DESCRIPTION_OK);
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserId(INITIATIVE_ID_OK, USER_ID_OK))
-//                .thenReturn(
-//                        Collections.emptyList());
-//        try {
-//            ibanService.putIban(INITIATIVE_ID_OK, USER_ID_OK, IBAN_WRONG_2, DESCRIPTION_OK);
-//            Assertions.fail();
-//        } catch (InvalidCheckDigitException e) {
-//            assertNotNull(e.getMessage());
-//        }
-//
-//    }
-//
-//    @Test
-//    void getIban_ok() {
-//        final IbanModel iban = new IbanModel(USER_ID_OK,INITIATIVE_ID, IBAN_OK, DESCRIPTION_OK);
-//        iban.setEnabled(true);
-//        iban.setInsertIbanTimestamp(LocalDateTime.now());
-//
-//        IbanDTO ibanDTO = new IbanDTO(IBAN_OK,DESCRIPTION_OK, HOLDER_BANK_OK,CHANNEL_OK);
-//
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserIdAndEnabledTrue(INITIATIVE_ID_OK, USER_ID_OK))
-//                .thenReturn(Optional.of(iban));
-//        ibanService.getIban(INITIATIVE_ID_OK, USER_ID_OK);
-//
-//        assertEquals(ibanDTO.getIban(), iban.getIbanCode());
-//
-//    }
-//
-//    @Test
-//    void getIban_ko() {
-//        Mockito.when(ibanRepositoryMock.findByInitiativeIdAndUserIdAndEnabledTrue(INITIATIVE_ID, USER_ID))
-//                .thenReturn(Optional.empty());
-//        try {
-//            ibanService.getIban(INITIATIVE_ID, USER_ID);
-//        } catch (IbanException e) {
-//            assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
-//        }
-//
-//    }
 }
