@@ -12,11 +12,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/idpay/iban")
 public interface IbanController {
     /**
-     * Get Iban
+     * Get IbanList
      *
      * @param userId
      * @return
      */
     @GetMapping("/{userId}")
     ResponseEntity<List<IbanDTO>> getIbanList(@PathVariable("userId") String userId);
+
+
+    /**
+     * Get Iban
+     *
+     * @param iban
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{iban}/{userId}")
+    ResponseEntity<IbanDTO> getIban(@PathVariable("iban") String iban, @PathVariable("userId") String userId);
+
 }

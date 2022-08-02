@@ -10,6 +10,7 @@ import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import java.time.Duration;
@@ -19,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class IbanServiceImpl implements IbanService {
+
   @Autowired
   private CheckIbanRestConnector checkIbanRestConnector;
   @Autowired
@@ -36,7 +39,7 @@ public class IbanServiceImpl implements IbanService {
     List<IbanDTO> ibanDTOList = new ArrayList<>();
     for (IbanModel ibanModel : ibanList) {
       IbanDTO ibanDTO = new IbanDTO(ibanModel.getIban(), ibanModel.getCheckIbanStatus(),
-          ibanModel.getHolderBank());
+          ibanModel.getHolderBank(), ibanModel.getChannel(), ibanModel.getDescription());
       ibanDTOList.add(ibanDTO);
     }
     return ibanDTOList;
@@ -47,6 +50,8 @@ public class IbanServiceImpl implements IbanService {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
+    ibanModel.setChannel(iban.getChannel());
+    ibanModel.setDescription(iban.getDescription());
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
 
     try {
@@ -90,6 +95,17 @@ public class IbanServiceImpl implements IbanService {
       }
     }
     ibanRepository.save(ibanModel);
+  }
+
+  @Override
+  public IbanDTO getIban(String iban, String userId) {
+    IbanModel ibanModel = ibanRepository.findByIbanAndUserId(iban, userId)
+        .orElseThrow(() -> new IbanException(
+            HttpStatus.NOT_FOUND.value(),
+            String.format("Iban for userId %s not found.",
+                userId)));
+    return new IbanDTO(ibanModel.getIban(), ibanModel.getCheckIbanStatus(),
+        ibanModel.getHolderBank(), ibanModel.getChannel(), ibanModel.getDescription());
   }
 
 

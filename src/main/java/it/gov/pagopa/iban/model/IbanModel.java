@@ -23,6 +23,8 @@ public class IbanModel {
     private String bicCode;
     private String holderBank;
 
+    private String channel;
+    private String description;
     private LocalDateTime queueDate;
     private LocalDateTime checkIbanResponseDate;
 
