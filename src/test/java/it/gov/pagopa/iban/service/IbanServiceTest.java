@@ -3,6 +3,7 @@ package it.gov.pagopa.iban.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.mongodb.assertions.Assertions;
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
@@ -17,12 +18,14 @@ import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.PayloadCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -240,6 +243,31 @@ class IbanServiceTest {
             ibanService.saveIban(IBAN_QUEUE_DTO_KO);
         } catch (FeignException e) {
             assertEquals(HttpStatus.BAD_REQUEST.value(), e.status());
+        }
+    }
+
+    @Test
+    void getIban_ok() {
+        Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
+            .thenReturn(Optional.of(IBAN_MODEL));
+        IbanDTO ibanDTO = ibanService.getIban(IBAN_OK, USER_ID);
+
+        assertEquals(ibanDTO.getIban(), IBAN_MODEL.getIban());
+        assertEquals(ibanDTO.getCheckIbanStatus(), IBAN_MODEL.getCheckIbanStatus());
+        assertEquals(ibanDTO.getDescription(), IBAN_MODEL.getDescription());
+        assertEquals(ibanDTO.getHolderBank(), IBAN_MODEL.getHolderBank());
+        assertEquals(ibanDTO.getChannel(), IBAN_MODEL.getChannel());
+    }
+
+    @Test
+    void getIban_ko() {
+        Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
+            .thenReturn(Optional.empty());
+        try {
+            ibanService.getIban(IBAN_OK, USER_ID);
+            Assertions.fail();
+        } catch (IbanException e) {
+            assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
         }
     }
 }
