@@ -39,7 +39,7 @@ public class IbanServiceImpl implements IbanService {
     List<IbanDTO> ibanDTOList = new ArrayList<>();
     for (IbanModel ibanModel : ibanList) {
       IbanDTO ibanDTO = new IbanDTO(ibanModel.getIban(), ibanModel.getCheckIbanStatus(),
-          ibanModel.getHolderBank());
+          ibanModel.getHolderBank(), ibanModel.getChannel(), ibanModel.getDescription());
       ibanDTOList.add(ibanDTO);
     }
     return ibanDTOList;

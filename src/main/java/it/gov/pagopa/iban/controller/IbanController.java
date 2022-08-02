@@ -29,6 +29,6 @@ public interface IbanController {
      * @return
      */
     @GetMapping("/{iban}/{userId}")
-    ResponseEntity<IbanDTO> getIban(@PathVariable("iban") String iban, @PathVariable("iban") String userId);
+    ResponseEntity<IbanDTO> getIban(@PathVariable("iban") String iban, @PathVariable("userId") String userId);
 
 }
