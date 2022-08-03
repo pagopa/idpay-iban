@@ -8,6 +8,7 @@ import it.gov.pagopa.iban.constants.IbanConstants;
 import it.gov.pagopa.iban.decrypt.DecryptRestConnector;
 import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
+import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.exception.IbanException;
@@ -34,15 +35,20 @@ public class IbanServiceImpl implements IbanService {
   @Autowired
   private DecryptRestConnector decryptRestConnector;
 
-  public List<IbanDTO> getIbanList(String userId) {
-    List<IbanModel> ibanList = ibanRepository.findByUserId(userId);
+  public IbanListDTO getIbanList(String userId) {
+    List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);
     List<IbanDTO> ibanDTOList = new ArrayList<>();
-    for (IbanModel ibanModel : ibanList) {
-      IbanDTO ibanDTO = new IbanDTO(ibanModel.getIban(), ibanModel.getCheckIbanStatus(),
-          ibanModel.getHolderBank(), ibanModel.getChannel(), ibanModel.getDescription());
-      ibanDTOList.add(ibanDTO);
+    IbanListDTO ibanList = new IbanListDTO();
+    if (ibanModelList.isEmpty()) {
+      throw new IbanException(HttpStatus.NOT_FOUND.value(),
+          String.format("No iban associated with the userId %s was found", userId));
     }
-    return ibanDTOList;
+    ibanModelList.forEach(iban ->
+        ibanDTOList.add(new IbanDTO(iban.getIban(), iban.getCheckIbanStatus(),
+            iban.getHolderBank(), iban.getChannel(), iban.getDescription()))
+    );
+    ibanList.setIbanList(ibanDTOList);
+    return ibanList;
   }
 
   public void saveIban(IbanQueueDTO iban) {
@@ -107,6 +113,4 @@ public class IbanServiceImpl implements IbanService {
     return new IbanDTO(ibanModel.getIban(), ibanModel.getCheckIbanStatus(),
         ibanModel.getHolderBank(), ibanModel.getChannel(), ibanModel.getDescription());
   }
-
-
 }

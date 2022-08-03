@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.iban.dto.ErrorDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
+import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.service.IbanService;
 import java.util.ArrayList;
@@ -50,10 +51,12 @@ class IbanControllerTest {
 
   @Test
   void getIbanList_ok() throws Exception {
+    IbanListDTO ibanList = new IbanListDTO();
     List<IbanDTO> ibanDTOList = new ArrayList<>();
     ibanDTOList.add(IBAN_DTO);
+    ibanList.setIbanList(ibanDTOList);
     Mockito.when(ibanServiceMock.getIbanList(USER_ID))
-        .thenReturn(ibanDTOList);
+        .thenReturn(ibanList);
 
     mvc.perform(
             MockMvcRequestBuilders.get(BASE_URL + "/" + USER_ID)
@@ -63,9 +66,11 @@ class IbanControllerTest {
 
   @Test
   void getIbanList_empty() throws Exception {
+    IbanListDTO ibanList = new IbanListDTO();
     List<IbanDTO> ibanDTOList = new ArrayList<>();
+    ibanList.setIbanList(ibanDTOList);
     Mockito.when(ibanServiceMock.getIbanList(USER_ID))
-        .thenReturn(ibanDTOList);
+        .thenReturn(ibanList);
 
     mvc.perform(
             MockMvcRequestBuilders.get(BASE_URL + "/" + USER_ID)
