@@ -1,7 +1,8 @@
 package it.gov.pagopa.iban.controller;
 
 import it.gov.pagopa.iban.dto.IbanDTO;
-import java.util.List;
+import it.gov.pagopa.iban.dto.IbanListDTO;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,7 @@ public interface IbanController {
      * @return
      */
     @GetMapping("/{userId}")
-    ResponseEntity<List<IbanDTO>> getIbanList(@PathVariable("userId") String userId);
+    ResponseEntity<IbanListDTO> getIbanList(@Valid @PathVariable("userId") String userId);
 
 
     /**
@@ -29,6 +30,6 @@ public interface IbanController {
      * @return
      */
     @GetMapping("/{iban}/{userId}")
-    ResponseEntity<IbanDTO> getIban(@PathVariable("iban") String iban, @PathVariable("userId") String userId);
+    ResponseEntity<IbanDTO> getIban(@Valid @PathVariable("iban") String iban, @PathVariable("userId") String userId);
 
 }

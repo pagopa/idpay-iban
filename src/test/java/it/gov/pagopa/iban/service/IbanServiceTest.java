@@ -1,7 +1,6 @@
 package it.gov.pagopa.iban.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.mongodb.assertions.Assertions;
 import feign.FeignException;
@@ -15,6 +14,7 @@ import it.gov.pagopa.iban.dto.BankInfoCheckIbanDTO;
 import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.ErrorCheckIbanDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
+import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.PayloadCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
@@ -75,9 +75,9 @@ class IbanServiceTest {
         List<IbanModel> ibanModelList = new ArrayList<>();
         ibanModelList.add(IBAN_MODEL);
         Mockito.when(ibanRepositoryMock.findByUserId(USER_ID)).thenReturn(ibanModelList);
-        List<IbanDTO> ibanDTO = ibanService.getIbanList(USER_ID);
+        IbanListDTO ibanDTO = ibanService.getIbanList(USER_ID);
 
-        IbanDTO actual = ibanDTO.get(0);
+        IbanDTO actual = ibanDTO.getIbanList().get(0);
         assertEquals(IBAN_MODEL.getIban(), actual.getIban());
         assertEquals(IBAN_MODEL.getCheckIbanStatus(), actual.getCheckIbanStatus());
         assertEquals(IBAN_MODEL.getHolderBank(), actual.getHolderBank());
@@ -87,8 +87,12 @@ class IbanServiceTest {
     void getIbanList_empty(){
         List<IbanModel> ibanModelList = new ArrayList<>();
         Mockito.when(ibanRepositoryMock.findByUserId(USER_ID)).thenReturn(ibanModelList);
-        List<IbanDTO> ibanDTO = ibanService.getIbanList(USER_ID);
-        assertTrue(ibanDTO.isEmpty());
+        try {
+            ibanService.getIbanList(USER_ID);
+            Assertions.fail();
+        } catch (IbanException e) {
+            assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
+        }
     }
 
     @Test
