@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "0097d174-34df-4db1-9a83-13f5a34d2221",
+		"name": "Iban e2e",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21721488"
+	},
+	"item": [
+		{
+			"name": "Iban",
+			"item": [
+				{
+					"name": "Generate Token IO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Retrieve Token', () => {\r",
+									"    //verify response HTTP status \r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "",
+								"type": "default"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode=TEST-OK",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bpd",
+								"pagopa",
+								"api",
+								"v1",
+								"login"
+							],
+							"query": [
+								{
+									"key": "fiscalCode",
+									"value": "TEST-OK"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Iban",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Iban OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"GET Iban- Ok\", function () {\r",
+									"    let jsonResponse = pm.response.json()\r",
+									"        pm.expect(jsonResponse.iban).equals(\"IT43O0326822300052755845000\");\r",
+									"        pm.expect(jsonResponse.checkIbanStatus).equals(\"OK\");\r",
+									"        pm.expect(jsonResponse.holderBank).equals('BANCA SELLA SPA');\r",
+									"        pm.expect(jsonResponse.channel).equals(\"APP_IO\");\r",
+									"        pm.expect(jsonResponse.description).equals(\"conto cointestato\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenIO}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{apimSubscriptionKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/idpay/iban/IT43O0326822300052755845000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"idpay",
+								"iban",
+								"IT43O0326822300052755845000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Iban ko",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Iban KO\", function () {\r",
+									"    let jsonStatus = pm.response.json()\r",
+									"    pm.expect(jsonStatus.code).equals(404);\r",
+									"    pm.expect(jsonStatus.message).equals(\"Iban for userId 18064b3d-50b7-4b8b-8b7b-9cc7d720f7ca not found.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenIO}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{apimSubscriptionKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/idpay/iban/IT43O03268223000527558450",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"idpay",
+								"iban",
+								"IT43O03268223000527558450"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get IbanList - OK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get IbanList OK\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenIO}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{apimSubscriptionKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/idpay/iban/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"idpay",
+								"iban",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Token IO Empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Retrieve Token', () => {\r",
+									"    //verify response HTTP status \r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.collectionVariables.set(\"tokenIO2\", pm.response.text());\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "",
+								"type": "default"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode=SLVLSS92T45Z602R",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bpd",
+								"pagopa",
+								"api",
+								"v1",
+								"login"
+							],
+							"query": [
+								{
+									"key": "fiscalCode",
+									"value": "SLVLSS92T45Z602R"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get IbanList - Empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get IbanList empty\", function () {\r",
+									"    let jsonResponse = pm.response.json()\r",
+									"    pm.expect(jsonResponse.code).equals(404);\r",
+									"    pm.expect(jsonResponse.message).equals(\"No iban associated with the userId 8ff2db29-0c99-4dcb-aba0-e855814b9054 was found\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenIO2}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "{{apimSubscriptionKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Ocp-Apim-Trace",
+								"value": "true",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/idpay/iban/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"idpay",
+								"iban",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "tokenIOTest",
+			"value": ""
+		},
+		{
+			"key": "tokenIO",
+			"value": ""
+		},
+		{
+			"key": "tokenIO2",
+			"value": ""
+		}
+	]
+}
