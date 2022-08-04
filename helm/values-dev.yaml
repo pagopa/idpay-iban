@@ -91,7 +91,7 @@ microservice-chart:
 
   envConfigMapExternals:
     idpay-common:
-      TZ: tz
+      TZ: TZ
     rest-client:
       CHECKIBAN_BASE_URL: checkiban_base_url
       CHECKIBAN_URL: checkiban_url
