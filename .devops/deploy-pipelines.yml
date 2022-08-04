@@ -42,6 +42,8 @@ variables:
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     containerRegistry: '$(DEV_CONTAINER_REGISTRY_NAME)'
     selfHostedAgentPool: $(DEV_AGENT_POOL)
+    # postman environment secure file
+    postmanEnvFile: idpay_dev.postman_environment.json
 
   ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/release-uat') }}:
     environment: 'UAT'
@@ -49,6 +51,8 @@ variables:
     kubernetesServiceConnection: '$(UAT_KUBERNETES_SERVICE_CONN)'
     containerRegistry: '$(UAT_CONTAINER_REGISTRY_NAME)'
     selfHostedAgentPool: $(UAT_AGENT_POOL)
+    # postman environment secure file
+    postmanEnvFile: idpay_uat.postman_environment.json
 
   ${{ elseif startsWith(variables['Build.SourceBranch'], 'refs/heads/release-prod') }}:
     environment: 'PROD'
@@ -63,6 +67,8 @@ variables:
     kubernetesServiceConnection: '$(DEV_KUBERNETES_SERVICE_CONN)'
     containerRegistry: '$(DEV_CONTAINER_REGISTRY_NAME)'
     selfHostedAgentPool: $(DEV_AGENT_POOL)
+    # postman environment secure file
+    postmanEnvFile: idpay_dev.postman_environment.json
 
 stages:
   - stage: 'pom_version'
