@@ -75,7 +75,7 @@ public class IbanServiceImpl implements IbanService {
           "Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
       checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
       log.info("CF di test: " + decryptedCfDTO.getPii());
-      if (checkIbanDTO != null) {
+      if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals("OK")) {
         log.info("CheckIban's answer: " + checkIbanDTO);
         ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
         ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
@@ -101,7 +101,7 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
         ibanModel.setErrorDescription(errorDescription);
         ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
-      } else {
+      }
         IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
             .userId(iban.getUserId())
             .iban(iban.getIban())
@@ -111,7 +111,7 @@ public class IbanServiceImpl implements IbanService {
             .queueDate(LocalDateTime.now().toString())
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
-      }
+
     }
     ibanRepository.save(ibanModel);
   }
