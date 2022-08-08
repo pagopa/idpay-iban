@@ -100,6 +100,7 @@ microservice-chart:
       KAFKA_BINDER_BROKER_ENDPOINT_LIST: kafka_broker
       KAFKA_IBAN_SASL_MECHANISM: kafka_sasl_mechanism
       KAFKA_IBAN_SECURITY_PROTOCOL: kafka_security_protocol
+      KAFKA_TOPIC_WALLET:
       KAFKA_TOPIC_IBAN: idpay_checkiban_evaluation_topic
       KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-eval-consumer-group
 
@@ -108,6 +109,7 @@ microservice-chart:
     MONGODB_URI: mongodb-connection-string
 #    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-instrumentation-key
     KAFKA_IBAN_SASL_JAAS_CONFIG: evh-idpay-checkiban-evaluation-idpay-checkiban-evaluation-consumer-jaas-config-idpay-00
+    KAFKA_WALLET_SASL_JAAS_CONFIG: evh-idpay-checkiban-outcome-idpay-checkiban-outcomer-producer-jaas-config-idpay-00
     CHECKIBAN_API_KEY: checkiban-api-key
     CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
     PDV_DECRYPT_API_KEY: pdv-api-key
