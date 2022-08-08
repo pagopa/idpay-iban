@@ -100,7 +100,7 @@ microservice-chart:
       KAFKA_BINDER_BROKER_ENDPOINT_LIST: kafka_broker
       KAFKA_IBAN_SASL_MECHANISM: kafka_sasl_mechanism
       KAFKA_IBAN_SECURITY_PROTOCOL: kafka_security_protocol
-      KAFKA_TOPIC_WALLET:
+      KAFKA_TOPIC_WALLET: idpay_checkiban_outcome_topic
       KAFKA_TOPIC_IBAN: idpay_checkiban_evaluation_topic
       KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-eval-consumer-group
 
