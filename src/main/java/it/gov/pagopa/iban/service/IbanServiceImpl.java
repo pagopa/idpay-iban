@@ -10,7 +10,9 @@ import it.gov.pagopa.iban.dto.DecryptedCfDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
+import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.event.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
@@ -34,6 +36,9 @@ public class IbanServiceImpl implements IbanService {
   private IbanRepository ibanRepository;
   @Autowired
   private DecryptRestConnector decryptRestConnector;
+
+  @Autowired
+  IbanProducer ibanProducer;
 
   public IbanListDTO getIbanList(String userId) {
     List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);
@@ -91,13 +96,21 @@ public class IbanServiceImpl implements IbanService {
         errorCode = String.valueOf(e.status());
         errorDescription = e.contentUTF8();
       }
-      ibanModel.setErrorCode(errorCode);
-      ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
-      ibanModel.setErrorDescription(errorDescription);
       if (e.status() == 501 || e.status() == 502) {
+        ibanModel.setErrorCode(errorCode);
+        ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
+        ibanModel.setErrorDescription(errorDescription);
         ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
       } else {
-        ibanModel.setCheckIbanStatus(IbanConstants.KO);
+        IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
+            .userId(iban.getUserId())
+            .iban(iban.getIban())
+            .status(IbanConstants.KO)
+            .errorCode(errorCode)
+            .errorDescription(errorDescription)
+            .queueDate(LocalDateTime.now().toString())
+            .build();
+        ibanProducer.sendIban(ibanQueueWalletDTO);
       }
     }
     ibanRepository.save(ibanModel);
