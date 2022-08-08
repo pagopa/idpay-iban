@@ -18,6 +18,7 @@ import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.PayloadCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.event.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
@@ -48,6 +49,9 @@ class IbanServiceTest {
     CheckIbanRestConnector checkIbanRestConnector;
     @MockBean
     DecryptRestConnector decryptRestConnector;
+
+    @MockBean
+    IbanProducer ibanProducer;
 
     private static final String USER_ID = "TRNFNC96R02H501I";
     private static final String IBAN_OK = "IT43O0326822300052755845000";
