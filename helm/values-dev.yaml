@@ -109,7 +109,7 @@ microservice-chart:
     MONGODB_URI: mongodb-connection-string
 #    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-instrumentation-key
     KAFKA_IBAN_SASL_JAAS_CONFIG: evh-idpay-checkiban-evaluation-idpay-checkiban-evaluation-consumer-jaas-config-idpay-00
-    KAFKA_WALLET_SASL_JAAS_CONFIG: evh-idpay-checkiban-outcome-idpay-checkiban-outcomer-producer-jaas-config-idpay-00
+    KAFKA_WALLET_SASL_JAAS_CONFIG: evh-idpay-checkiban-outcome-idpay-checkiban-outcome-producer-jaas-config-idpay-00
     CHECKIBAN_API_KEY: checkiban-api-key
     CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
     PDV_DECRYPT_API_KEY: pdv-api-key
