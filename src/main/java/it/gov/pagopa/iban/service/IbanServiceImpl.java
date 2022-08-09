@@ -81,6 +81,7 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
         ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
         ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+        ibanRepository.save(ibanModel);
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
@@ -101,7 +102,8 @@ public class IbanServiceImpl implements IbanService {
         ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
         ibanModel.setErrorDescription(errorDescription);
         ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
-      }
+        ibanRepository.save(ibanModel);
+      }else {
         IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
             .userId(iban.getUserId())
             .iban(iban.getIban())
@@ -112,8 +114,8 @@ public class IbanServiceImpl implements IbanService {
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
 
+      }
     }
-    ibanRepository.save(ibanModel);
   }
 
   @Override
