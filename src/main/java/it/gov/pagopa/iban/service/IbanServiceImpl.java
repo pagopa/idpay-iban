@@ -93,8 +93,6 @@ public class IbanServiceImpl implements IbanService {
             .userId(iban.getUserId())
             .iban(iban.getIban())
             .status(IbanConstants.KO)
-            .errorCode(errorCode)
-            .errorDescription(errorDescription)
             .queueDate(LocalDateTime.now().toString())
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
