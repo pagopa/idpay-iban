@@ -123,37 +123,24 @@ class IbanServiceTest {
 
     @Test
     void save_iban_unknown(){
-        ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0010","Error from PSP",null);
+        ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017","PSP 03440 Not Present in Routing Subsystem",null);
         ERROR_LIST.add(errorCheckIbanDTO);
         PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO("KO",ACCOUNT_CHECK_IBAN_DTO,ACCOUNT_HOLDER_CHECK_IBAN_DTO,BANK_INFO_CHECK_IBAN_DTO);
 
-        ResponseCheckIbanDTO response = new ResponseCheckIbanDTO("UNKNOWN_PSP",ERROR_LIST,payload);
+        ResponseCheckIbanDTO response = new ResponseCheckIbanDTO("KO",ERROR_LIST,payload);
 
         Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO.getUserId())).thenReturn(DECRYPTED_CF_DTO);
         Request request =
             Request.create(
                 Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-        Mockito.doThrow(new FeignException.BadGateway("", request, new byte[0], null))
+        Mockito.doThrow(new FeignException.NotImplemented("", request, new byte[0], null))
             .when(checkIbanRestConnector).checkIban(IBAN_OK,DECRYPTED_CF_DTO.getPii());
-        Mockito.doAnswer(invocationOnMock -> {
-            IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
-            IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
-            IBAN_MODEL_EMPTY.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO.getQueueDate()));
-            IBAN_MODEL_EMPTY.setCheckIbanStatus("UNKNOWN_PSP");
-            IBAN_MODEL_EMPTY.setErrorCode(errorCheckIbanDTO.getCode());
-            IBAN_MODEL_EMPTY.setCheckIbanResponseDate(LocalDateTime.now());
-            IBAN_MODEL_EMPTY.setErrorDescription(errorCheckIbanDTO.getDescription());
-            return null;
-        }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
 
         try {
             ibanService.saveIban(IBAN_QUEUE_DTO_KO);
         } catch (FeignException e) {
-            assertEquals(HttpStatus.BAD_GATEWAY.value(), e.status());
+            assertEquals(HttpStatus.NOT_IMPLEMENTED.value(), e.status());
         }
-        assertEquals(response.getStatus(), IBAN_MODEL_EMPTY.getCheckIbanStatus());
-//        assertEquals(response.getErrors().get(0).getDescription(), errorCheckIbanDTO.getDescription());
-//        assertEquals(response.getErrors().get(0).getCode(), errorCheckIbanDTO.getCode());
     }
 
     @Test

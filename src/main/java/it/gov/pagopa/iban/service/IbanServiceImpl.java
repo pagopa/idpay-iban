@@ -58,13 +58,6 @@ public class IbanServiceImpl implements IbanService {
 
   public void saveIban(IbanQueueDTO iban) {
     ResponseCheckIbanDTO checkIbanDTO;
-    IbanModel ibanModel = new IbanModel();
-    ibanModel.setUserId(iban.getUserId());
-    ibanModel.setIban(iban.getIban());
-    ibanModel.setChannel(iban.getChannel());
-    ibanModel.setDescription(iban.getDescription());
-    ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
-
     try {
       Instant start = Instant.now();
       log.debug("Calling decrypting service at: " + start);
@@ -77,10 +70,7 @@ public class IbanServiceImpl implements IbanService {
       log.info("CF di test: " + decryptedCfDTO.getPii());
       if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals("OK")) {
         log.info("CheckIban's answer: " + checkIbanDTO);
-        ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
-        ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
-        ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
-        ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+        this.saveOk(iban,checkIbanDTO);
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
@@ -97,11 +87,8 @@ public class IbanServiceImpl implements IbanService {
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
-        ibanModel.setErrorCode(errorCode);
-        ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
-        ibanModel.setErrorDescription(errorDescription);
-        ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
-      }
+        this.saveUnknown(iban,errorCode,errorDescription);
+      }else {
         IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
             .userId(iban.getUserId())
             .iban(iban.getIban())
@@ -111,8 +98,35 @@ public class IbanServiceImpl implements IbanService {
             .queueDate(LocalDateTime.now().toString())
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
-
+      }
     }
+  }
+  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO){
+    IbanModel ibanModel = new IbanModel();
+    ibanModel.setUserId(iban.getUserId());
+    ibanModel.setIban(iban.getIban());
+    ibanModel.setChannel(iban.getChannel());
+    ibanModel.setDescription(iban.getDescription());
+    ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
+    ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
+    ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
+    ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
+    ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+    ibanRepository.save(ibanModel);
+
+  }
+  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription){
+    IbanModel ibanModel = new IbanModel();
+    ibanModel.setUserId(iban.getUserId());
+    ibanModel.setIban(iban.getIban());
+    ibanModel.setChannel(iban.getChannel());
+    ibanModel.setDescription(iban.getDescription());
+    ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
+    ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
+    ibanModel.setErrorCode(errorCode);
+    ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
+    ibanModel.setErrorDescription(errorDescription);
+    ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
     ibanRepository.save(ibanModel);
   }
 
