@@ -69,9 +69,18 @@ public class IbanServiceImpl implements IbanService {
       checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
       log.info("CF di test: " + decryptedCfDTO.getPii());
       log.info("CheckIban's answer: " + checkIbanDTO);
-      if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals("OK")) {
+      if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
         log.info("CheckIban's answer: " + checkIbanDTO);
         this.saveOk(iban,checkIbanDTO);
+      }else {
+        IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
+          .userId(iban.getUserId())
+          .iban(iban.getIban())
+          .status(IbanConstants.KO)
+          .queueDate(LocalDateTime.now().toString())
+          .build();
+      ibanProducer.sendIban(ibanQueueWalletDTO);
+
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
@@ -89,18 +98,7 @@ public class IbanServiceImpl implements IbanService {
       }
       if (e.status() == 501 || e.status() == 502) {
         this.saveUnknown(iban,errorCode,errorDescription);
-      }else {
-        IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
-            .userId(iban.getUserId())
-            .iban(iban.getIban())
-            .status(IbanConstants.KO)
-            .queueDate(LocalDateTime.now().toString())
-            .build();
-        ibanProducer.sendIban(ibanQueueWalletDTO);
       }
-
-    }catch(Exception e){
-      log.info("eccezione:"+e.getMessage());
     }
   }
   private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO){
