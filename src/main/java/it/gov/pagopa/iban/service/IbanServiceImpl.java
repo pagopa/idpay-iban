@@ -68,6 +68,7 @@ public class IbanServiceImpl implements IbanService {
           "Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
       checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
       log.info("CF di test: " + decryptedCfDTO.getPii());
+      log.info("CheckIban's answer: " + checkIbanDTO);
       if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals("OK")) {
         log.info("CheckIban's answer: " + checkIbanDTO);
         this.saveOk(iban,checkIbanDTO);
