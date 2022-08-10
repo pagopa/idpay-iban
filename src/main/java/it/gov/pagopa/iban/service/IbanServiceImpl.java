@@ -97,6 +97,9 @@ public class IbanServiceImpl implements IbanService {
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
       }
+
+    }catch(Exception e){
+      log.info("eccezione:"+e.getMessage());
     }
   }
   private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO){
