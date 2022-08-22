@@ -2,6 +2,7 @@ package it.gov.pagopa.iban.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.mongodb.assertions.Assertions;
 import feign.FeignException;
@@ -158,6 +159,11 @@ class IbanServiceTest {
     assertEquals(IBAN_MODEL_EMPTY.getCheckIbanStatus(), response.getPayload().getValidationStatus());
     assertEquals(IBAN_MODEL_EMPTY.getBicCode(), response.getPayload().getBankInfo().getBicCode());
     assertEquals(IBAN_MODEL_EMPTY.getHolderBank(), response.getPayload().getBankInfo().getBusinessName());
+    assertNotNull(IBAN_MODEL_EMPTY.getCheckIbanResponseDate());
+    assertNull(IBAN_MODEL_EMPTY.getErrorCode());
+    assertNull(IBAN_MODEL_EMPTY.getErrorDescription());
+
+
 
   }
 
