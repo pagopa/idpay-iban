@@ -81,6 +81,8 @@ class IbanServiceTest {
   private static final IbanQueueDTO IBAN_QUEUE_DTO_UNKNOWN = new IbanQueueDTO(USER_ID_UNKNOWN, IBAN_UNKNOWN,
       CHANNEL, DESCRIPTION, LocalDateTime.now().toString());
   private static final IbanModel IBAN_MODEL_EMPTY = new IbanModel();
+  private static final IbanModel IBAN_MODEL_EMPTY_UNKNOWN = new IbanModel();
+
   private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_DTO = new AccountCheckIbanDTO(IBAN_OK,
       "IBAN", BIC_CODE);
   private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_KO = new AccountCheckIbanDTO(IBAN_KO,
@@ -163,8 +165,6 @@ class IbanServiceTest {
     assertNull(IBAN_MODEL_EMPTY.getErrorCode());
     assertNull(IBAN_MODEL_EMPTY.getErrorDescription());
 
-
-
   }
 
   @Test
@@ -174,15 +174,32 @@ class IbanServiceTest {
     ERROR_LIST.add(errorCheckIbanDTO);
     PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO, ACCOUNT_CHECK_IBAN_UNKNOWN,
         ACCOUNT_HOLDER_CHECK_IBAN_UNKNOWN, BANK_INFO_CHECK_IBAN_DTO);
+    ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
+        payload);
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO_UNKNOWN.getUserId()))
         .thenReturn(DECRYPTED_CF_UNKNOWN);
+
     Request request =
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
     Mockito.doThrow(new FeignException.NotImplemented("", request, new byte[0], null))
         .when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+    Mockito.doAnswer(invocationOnMock -> {
+      IBAN_MODEL_EMPTY_UNKNOWN.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
+      IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
+      IBAN_MODEL_EMPTY_UNKNOWN.setChannel(IBAN_QUEUE_DTO_UNKNOWN.getChannel());
+      IBAN_MODEL_EMPTY_UNKNOWN.setDescription(IBAN_QUEUE_DTO_UNKNOWN.getDescription());
+      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
+      IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanResponseDate(LocalDateTime.now());
+      IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
+      IBAN_MODEL_EMPTY_UNKNOWN.setErrorCode(response.getErrors().get(0).getCode());
+      IBAN_MODEL_EMPTY_UNKNOWN.setErrorDescription(response.getErrors().get(0).getDescription());
+      return null;
+    }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
     ibanService.saveIban(IBAN_QUEUE_DTO_UNKNOWN);
     assertNotNull(IBAN_QUEUE_DTO_UNKNOWN);
+    assertNotNull(IBAN_MODEL_EMPTY_UNKNOWN);
+
 
   }
 
