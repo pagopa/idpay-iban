@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class IbanQueueDTO {
 
   private String userId;
+  private String initiativeId;
   private String iban;
   private String channel;
   private String description;
