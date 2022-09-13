@@ -69,17 +69,19 @@ public class IbanServiceImpl implements IbanService {
       checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
       log.info("CF di test: " + decryptedCfDTO.getPii());
       log.info("CheckIban's answer: " + checkIbanDTO);
-      if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
+      if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus()
+          .equals(IbanConstants.OK)) {
         log.info("CheckIban's answer: " + checkIbanDTO);
-        this.saveOk(iban,checkIbanDTO);
-      }else {
+        this.saveOk(iban, checkIbanDTO);
+      } else {
         IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
-          .userId(iban.getUserId())
-          .iban(iban.getIban())
-          .status(IbanConstants.KO)
-          .queueDate(LocalDateTime.now().toString())
-          .build();
-      ibanProducer.sendIban(ibanQueueWalletDTO);
+            .userId(iban.getUserId())
+            .iban(iban.getIban())
+            .initiativeId(iban.getInitiativeId())
+            .status(IbanConstants.KO)
+            .queueDate(LocalDateTime.now().toString())
+            .build();
+        ibanProducer.sendIban(ibanQueueWalletDTO);
 
       }
     } catch (FeignException e) {
@@ -97,11 +99,12 @@ public class IbanServiceImpl implements IbanService {
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
-        this.saveUnknown(iban,errorCode,errorDescription);
+        this.saveUnknown(iban, errorCode, errorDescription);
       }
     }
   }
-  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO){
+
+  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -115,7 +118,8 @@ public class IbanServiceImpl implements IbanService {
     ibanRepository.save(ibanModel);
 
   }
-  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription){
+
+  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());

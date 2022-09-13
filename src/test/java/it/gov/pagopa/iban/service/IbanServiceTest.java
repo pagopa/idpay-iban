@@ -59,6 +59,7 @@ class IbanServiceTest {
 
 
   private static final String USER_ID = "TRNFNC96R02H501I";
+  private static final String INITIATIVEID = "INITIATIVEID";
   private static final String USER_ID_UNKNOWN = "SLVLSS92T45Z602R";
   private static final String IBAN_OK = "IT43O0326822300052755845000";
   private static final String IBAN_UNKNOWN = "IT43Y0344003212000000242300";
@@ -74,11 +75,11 @@ class IbanServiceTest {
   private static final String DESCRIPTION = "conto intestato";
   private static final IbanModel IBAN_MODEL = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
       BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID, IBAN_OK, CHANNEL,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID,INITIATIVEID, IBAN_OK, CHANNEL,
       DESCRIPTION, LocalDateTime.now().toString());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID, IBAN_KO,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID,INITIATIVEID, IBAN_KO,
       CHANNEL, DESCRIPTION, LocalDateTime.now().toString());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO_UNKNOWN = new IbanQueueDTO(USER_ID_UNKNOWN, IBAN_UNKNOWN,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO_UNKNOWN = new IbanQueueDTO(USER_ID_UNKNOWN,INITIATIVEID, IBAN_UNKNOWN,
       CHANNEL, DESCRIPTION, LocalDateTime.now().toString());
   private static final IbanModel IBAN_MODEL_EMPTY = new IbanModel();
   private static final IbanModel IBAN_MODEL_EMPTY_UNKNOWN = new IbanModel();
@@ -220,6 +221,7 @@ class IbanServiceTest {
     final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
     Mockito.doAnswer(invocationOnMock -> {
       ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_KO.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO_KO.getInitiativeId());
       ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO_KO.getIban());
       ibanQueueWalletDTO.setStatus(IbanConstants.KO);
       ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
@@ -228,6 +230,7 @@ class IbanServiceTest {
 
     ibanService.saveIban(IBAN_QUEUE_DTO_KO);
     assertEquals(IBAN_QUEUE_DTO_KO.getUserId(), ibanQueueWalletDTO.getUserId());
+    assertEquals(IBAN_QUEUE_DTO_KO.getInitiativeId(), ibanQueueWalletDTO.getInitiativeId());
     assertEquals(IBAN_QUEUE_DTO_KO.getIban(), ibanQueueWalletDTO.getIban());
     assertEquals(IbanConstants.KO, ibanQueueWalletDTO.getStatus());
     assertNotNull(ibanQueueWalletDTO.getQueueDate());
