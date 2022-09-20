@@ -16,6 +16,7 @@ import it.gov.pagopa.iban.event.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,6 +37,9 @@ public class IbanServiceImpl implements IbanService {
   private IbanRepository ibanRepository;
   @Autowired
   private DecryptRestConnector decryptRestConnector;
+
+  @Autowired
+  private ObjectMapper mapper;
 
   @Autowired
   IbanProducer ibanProducer;
@@ -86,15 +90,18 @@ public class IbanServiceImpl implements IbanService {
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
-      ObjectMapper mapper = new ObjectMapper();
+      log.info(e.contentUTF8());
       String errorCode;
       String errorDescription;
       try {
         ResponseCheckIbanDTO responseCheckIbanDTO = mapper.readValue(e.contentUTF8(),
             ResponseCheckIbanDTO.class);
+        if(responseCheckIbanDTO==null){
+          throw new IbanException(e.status(), e.contentUTF8());
+        }
         errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
         errorDescription = responseCheckIbanDTO.getErrors().get(0).getDescription();
-      } catch (JacksonException exception) {
+      } catch (JacksonException | IbanException exception) {
         errorCode = String.valueOf(e.status());
         errorDescription = e.contentUTF8();
       }
