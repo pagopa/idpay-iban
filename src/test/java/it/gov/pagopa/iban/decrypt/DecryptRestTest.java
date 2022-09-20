@@ -34,7 +34,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
         HttpMessageConvertersAutoConfiguration.class
     })
 @TestPropertySource(
-    locations = "classpath:application.properties",
+    locations = "classpath:application.yml",
     properties = "spring.application.name=pdv-ms-tokenizer-decrypt")
 class DecryptRestTest {
     private static final String FISCAL_CODE = "AAAAAA00A00A000A";
