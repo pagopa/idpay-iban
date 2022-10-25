@@ -16,7 +16,6 @@ import it.gov.pagopa.iban.event.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -62,17 +61,23 @@ public class IbanServiceImpl implements IbanService {
 
   public void saveIban(IbanQueueDTO iban) {
     ResponseCheckIbanDTO checkIbanDTO;
-    try {
+    DecryptedCfDTO decryptedCfDTO;
+    try{
       Instant start = Instant.now();
       log.debug("Calling decrypting service at: " + start);
-      DecryptedCfDTO decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
+      decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
       Instant finish = Instant.now();
       long time = Duration.between(start, finish).toMillis();
       log.info(
           "Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
-      checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
-      log.info("CF di test: " + decryptedCfDTO.getPii());
-      log.info("CheckIban's answer: " + checkIbanDTO);
+    } catch (FeignException e) {
+      log.info("Exception: " + e.getMessage());
+      return;
+    }
+    try {
+        checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+        log.info("CF di test: " + decryptedCfDTO.getPii());
+        log.info("CheckIban's answer: " + checkIbanDTO);
       if (checkIbanDTO != null && checkIbanDTO.getPayload().getValidationStatus()
           .equals(IbanConstants.OK)) {
         log.info("CheckIban's answer: " + checkIbanDTO);
@@ -86,7 +91,6 @@ public class IbanServiceImpl implements IbanService {
             .queueDate(LocalDateTime.now().toString())
             .build();
         ibanProducer.sendIban(ibanQueueWalletDTO);
-
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
