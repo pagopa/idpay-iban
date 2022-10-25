@@ -76,9 +76,6 @@ microservice-chart:
     CHECKIBAN_API_KEY: checkiban-api-key
     CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
     PDV_DECRYPT_API_KEY: pdv-api-key
-    UTIL_CRYPTO_AES_SECRET_TYPE_PBE_SALT: notification-token-salt
-    UTIL_CRYPTO_AES_SECRET_TYPE_PBE_PASSPHRASE: notification-token-passphrase
-    UTIL_CRYPTO_AES_MODE_GCM_IV: notification-token-iv
 
   # nodeSelector: {}
 
