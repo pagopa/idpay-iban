@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonLocation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.assertions.Assertions;
@@ -30,7 +28,6 @@ import it.gov.pagopa.iban.event.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
