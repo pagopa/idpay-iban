@@ -83,11 +83,14 @@ class IbanServiceTest {
   private static final String DESCRIPTION = "conto intestato";
   private static final IbanModel IBAN_MODEL = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
       BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID,INITIATIVEID, IBAN_OK, CHANNEL,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID, INITIATIVEID,
+      IBAN_OK, CHANNEL,
       DESCRIPTION, LocalDateTime.now().toString());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID,INITIATIVEID, IBAN_KO,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID, INITIATIVEID,
+      IBAN_KO,
       CHANNEL, DESCRIPTION, LocalDateTime.now().toString());
-  private static final IbanQueueDTO IBAN_QUEUE_DTO_UNKNOWN = new IbanQueueDTO(USER_ID_UNKNOWN,INITIATIVEID, IBAN_UNKNOWN,
+  private static final IbanQueueDTO IBAN_QUEUE_DTO_UNKNOWN = new IbanQueueDTO(USER_ID_UNKNOWN,
+      INITIATIVEID, IBAN_UNKNOWN,
       CHANNEL, DESCRIPTION, LocalDateTime.now().toString());
   private static final IbanModel IBAN_MODEL_EMPTY = new IbanModel();
   private static final IbanModel IBAN_MODEL_EMPTY_UNKNOWN = new IbanModel();
@@ -96,7 +99,8 @@ class IbanServiceTest {
       "IBAN", BIC_CODE);
   private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_KO = new AccountCheckIbanDTO(IBAN_KO,
       "IBAN", BIC_CODE);
-  private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_UNKNOWN = new AccountCheckIbanDTO(IBAN_UNKNOWN,
+  private static final AccountCheckIbanDTO ACCOUNT_CHECK_IBAN_UNKNOWN = new AccountCheckIbanDTO(
+      IBAN_UNKNOWN,
       "IBAN", BIC_CODE);
   private static final AccountHolderCheckIbanDTO ACCOUNT_HOLDER_CHECK_IBAN_DTO = new AccountHolderCheckIbanDTO(
       "PERSON_NATURAL", USER_ID, "", "");
@@ -160,20 +164,21 @@ class IbanServiceTest {
       return null;
     }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
 
-    try{
+    try {
       ibanService.saveIban(IBAN_QUEUE_DTO);
     } catch (FeignException e) {
       fail();
     }
-
     assertEquals(IBAN_MODEL_EMPTY.getIban(), IBAN_QUEUE_DTO.getIban());
     assertEquals(IBAN_MODEL_EMPTY.getUserId(), IBAN_QUEUE_DTO.getUserId());
     assertEquals(IBAN_MODEL_EMPTY.getChannel(), IBAN_QUEUE_DTO.getChannel());
     assertEquals(IBAN_MODEL_EMPTY.getDescription(), IBAN_QUEUE_DTO.getDescription());
     assertEquals(IBAN_MODEL_EMPTY.getQueueDate().toString(), IBAN_QUEUE_DTO.getQueueDate());
-    assertEquals(IBAN_MODEL_EMPTY.getCheckIbanStatus(), response.getPayload().getValidationStatus());
+    assertEquals(IBAN_MODEL_EMPTY.getCheckIbanStatus(),
+        response.getPayload().getValidationStatus());
     assertEquals(IBAN_MODEL_EMPTY.getBicCode(), response.getPayload().getBankInfo().getBicCode());
-    assertEquals(IBAN_MODEL_EMPTY.getHolderBank(), response.getPayload().getBankInfo().getBusinessName());
+    assertEquals(IBAN_MODEL_EMPTY.getHolderBank(),
+        response.getPayload().getBankInfo().getBusinessName());
     assertNotNull(IBAN_MODEL_EMPTY.getCheckIbanResponseDate());
     assertNull(IBAN_MODEL_EMPTY.getErrorCode());
     assertNull(IBAN_MODEL_EMPTY.getErrorDescription());
@@ -181,11 +186,12 @@ class IbanServiceTest {
   }
 
   @Test
-  void save_iban_unknown_501(){
+  void save_iban_unknown_501() {
     ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
         "PSP 03440 Not Present in Routing Subsystem", null);
     ERROR_LIST.add(errorCheckIbanDTO);
-    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO, ACCOUNT_CHECK_IBAN_UNKNOWN,
+    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO,
+        ACCOUNT_CHECK_IBAN_UNKNOWN,
         ACCOUNT_HOLDER_CHECK_IBAN_UNKNOWN, BANK_INFO_CHECK_IBAN_DTO);
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         payload);
@@ -202,7 +208,8 @@ class IbanServiceTest {
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
       IBAN_MODEL_EMPTY_UNKNOWN.setChannel(IBAN_QUEUE_DTO_UNKNOWN.getChannel());
       IBAN_MODEL_EMPTY_UNKNOWN.setDescription(IBAN_QUEUE_DTO_UNKNOWN.getDescription());
-      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
+      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(
+          LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanResponseDate(LocalDateTime.now());
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
       IBAN_MODEL_EMPTY_UNKNOWN.setErrorCode(response.getErrors().get(0).getCode());
@@ -219,11 +226,12 @@ class IbanServiceTest {
   }
 
   @Test
-  void save_iban_unknown_502(){
+  void save_iban_unknown_502() {
     ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
         "PSP 03440 Not Present in Routing Subsystem", null);
     ERROR_LIST.add(errorCheckIbanDTO);
-    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO, ACCOUNT_CHECK_IBAN_UNKNOWN,
+    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO,
+        ACCOUNT_CHECK_IBAN_UNKNOWN,
         ACCOUNT_HOLDER_CHECK_IBAN_UNKNOWN, BANK_INFO_CHECK_IBAN_DTO);
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         payload);
@@ -240,7 +248,8 @@ class IbanServiceTest {
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
       IBAN_MODEL_EMPTY_UNKNOWN.setChannel(IBAN_QUEUE_DTO_UNKNOWN.getChannel());
       IBAN_MODEL_EMPTY_UNKNOWN.setDescription(IBAN_QUEUE_DTO_UNKNOWN.getDescription());
-      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
+      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(
+          LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanResponseDate(LocalDateTime.now());
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
       IBAN_MODEL_EMPTY_UNKNOWN.setErrorCode(response.getErrors().get(0).getCode());
@@ -259,14 +268,16 @@ class IbanServiceTest {
     ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
         "PSP 03440 Not Present in Routing Subsystem", null);
     ERROR_LIST.add(errorCheckIbanDTO);
-    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO, ACCOUNT_CHECK_IBAN_UNKNOWN,
+    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO,
+        ACCOUNT_CHECK_IBAN_UNKNOWN,
         ACCOUNT_HOLDER_CHECK_IBAN_UNKNOWN, BANK_INFO_CHECK_IBAN_DTO);
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         payload);
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO_UNKNOWN.getUserId()))
         .thenReturn(DECRYPTED_CF_UNKNOWN);
 
-    Mockito.when(mapper.readValue(Mockito.anyString(), (Class<ResponseCheckIbanDTO>) Mockito.any())).thenReturn(response);
+    Mockito.when(mapper.readValue(Mockito.anyString(), (Class<ResponseCheckIbanDTO>) Mockito.any()))
+        .thenReturn(response);
 
     Request request =
         Request.create(
@@ -278,7 +289,8 @@ class IbanServiceTest {
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
       IBAN_MODEL_EMPTY_UNKNOWN.setChannel(IBAN_QUEUE_DTO_UNKNOWN.getChannel());
       IBAN_MODEL_EMPTY_UNKNOWN.setDescription(IBAN_QUEUE_DTO_UNKNOWN.getDescription());
-      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
+      IBAN_MODEL_EMPTY_UNKNOWN.setQueueDate(
+          LocalDateTime.parse(IBAN_QUEUE_DTO_UNKNOWN.getQueueDate()));
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanResponseDate(LocalDateTime.now());
       IBAN_MODEL_EMPTY_UNKNOWN.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
       IBAN_MODEL_EMPTY_UNKNOWN.setErrorCode(response.getErrors().get(0).getCode());
@@ -293,11 +305,12 @@ class IbanServiceTest {
 
   @Test
   void save_iban_ko() {
-    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO, ACCOUNT_CHECK_IBAN_KO,
+    PayloadCheckIbanDTO payload = new PayloadCheckIbanDTO(CHECK_IBAN_STATUS_KO,
+        ACCOUNT_CHECK_IBAN_KO,
         ACCOUNT_HOLDER_CHECK_IBAN_DTO, BANK_INFO_CHECK_IBAN_DTO);
 
-    ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST, payload);
-
+    ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
+        payload);
 
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO_KO.getUserId()))
         .thenReturn(DECRYPTED_CF_DTO);
@@ -343,26 +356,6 @@ class IbanServiceTest {
     }
   }
 
-//  @Test
-//  void save_iban_ko_checkiban_2() {
-//    ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("-1",
-//        "", null);
-//    ERROR_LIST.add(errorCheckIbanDTO);
-//    Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO.getUserId()))
-//        .thenReturn(DECRYPTED_CF_DTO);
-//    Request request =
-//        Request.create(
-//            Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-//    Mockito.doThrow(new FeignException.BadRequest("", request, new byte[0], null))
-//        .when(checkIbanRestConnector).checkIban(IBAN_WRONG, DECRYPTED_CF_DTO.getPii());
-//
-//    try {
-//      ibanService.saveIban(IBAN_QUEUE_DTO_KO);
-//    } catch (FeignException e) {
-//      assertEquals(HttpStatus.BAD_REQUEST.value(), e.status());
-//    }
-//  }
-
   @Test
   void save_iban_ko_decrypt() {
     Request request =
@@ -373,6 +366,25 @@ class IbanServiceTest {
 
     try {
       ibanService.saveIban(IBAN_QUEUE_DTO_KO);
+    } catch (FeignException e) {
+      assertEquals(HttpStatus.BAD_REQUEST.value(), e.status());
+    }
+  }
+
+  @Test
+  void save_iban_ko_decrypt_errors_null() throws JsonProcessingException {
+    ResponseCheckIbanDTO response = new ResponseCheckIbanDTO("404", null, null);
+    Request request =
+        Request.create(
+            Request.HttpMethod.GET, "url", new HashMap<>(), null, new RequestTemplate());
+    Mockito.doThrow(new FeignException.NotFound("404", request, new byte[0], null))
+        .when(decryptRestConnector).getPiiByToken(IBAN_QUEUE_DTO.getUserId());
+
+    Mockito.when(mapper.readValue(Mockito.anyString(), (Class<ResponseCheckIbanDTO>) Mockito.any()))
+        .thenReturn(response);
+
+    try {
+      ibanService.saveIban(IBAN_QUEUE_DTO);
     } catch (FeignException e) {
       assertEquals(HttpStatus.BAD_REQUEST.value(), e.status());
     }
