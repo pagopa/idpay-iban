@@ -1,4 +1,4 @@
-package it.gov.pagopa.iban.event;
+package it.gov.pagopa.iban.event.producer;
 
 import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
 import org.springframework.beans.factory.annotation.Autowired;

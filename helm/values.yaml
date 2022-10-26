@@ -67,6 +67,9 @@ microservice-chart:
       KAFKA_TOPIC_WALLET: idpay_checkiban_outcome_topic
       KAFKA_TOPIC_IBAN: idpay_checkiban_evaluation_topic
       KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-eval-consumer-group
+    idpay-eventhub-01:
+      KAFKA_BINDER_BROKER_ENDPOINT_ERRORS: kafka_broker
+      KAFKA_TOPIC_ERRORS: idpay_error_topic
 
   envSecret:
     MONGODB_URI: mongodb-connection-string
@@ -76,6 +79,7 @@ microservice-chart:
     CHECKIBAN_API_KEY: checkiban-api-key
     CHECKIBAN_AUTHSCHEMA: checkiban-auth-schema
     PDV_DECRYPT_API_KEY: pdv-api-key
+    KAFKA_ERRORS_SASL_JAAS_CONFIG: evh-idpay-errors-idpay-errors-producer-jaas-config-idpay-01
 
   # nodeSelector: {}
 
