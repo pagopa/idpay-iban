@@ -12,7 +12,8 @@ import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
-import it.gov.pagopa.iban.event.IbanProducer;
+import it.gov.pagopa.iban.event.producer.ErrorProducer;
+import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
@@ -24,6 +25,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -42,6 +44,8 @@ public class IbanServiceImpl implements IbanService {
 
   @Autowired
   IbanProducer ibanProducer;
+  @Autowired
+  ErrorProducer errorProducer;
 
   public IbanListDTO getIbanList(String userId) {
     List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);
@@ -61,20 +65,14 @@ public class IbanServiceImpl implements IbanService {
 
   public void saveIban(IbanQueueDTO iban) {
     ResponseCheckIbanDTO checkIbanDTO;
-    DecryptedCfDTO decryptedCfDTO;
-    try{
+    try {
       Instant start = Instant.now();
       log.debug("Calling decrypting service at: " + start);
-      decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
+      DecryptedCfDTO decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
       Instant finish = Instant.now();
       long time = Duration.between(start, finish).toMillis();
       log.info(
           "Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
-    } catch (FeignException e) {
-      log.info("Exception: " + e.getMessage());
-      return;
-    }
-    try {
         checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
         log.info("CF di test: " + decryptedCfDTO.getPii());
         log.info("CheckIban's answer: " + checkIbanDTO);
@@ -95,24 +93,45 @@ public class IbanServiceImpl implements IbanService {
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
       log.info(e.contentUTF8());
-      String errorCode;
-      String errorDescription;
+      String errorCode = null;
+      String errorDescription = null;
       try {
         ResponseCheckIbanDTO responseCheckIbanDTO = mapper.readValue(e.contentUTF8(),
             ResponseCheckIbanDTO.class);
         if(responseCheckIbanDTO==null){
           throw new IbanException(e.status(), e.contentUTF8());
         }
-        errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
-        errorDescription = responseCheckIbanDTO.getErrors().get(0).getDescription();
+        if(responseCheckIbanDTO.getErrors()!=null) {
+          errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
+          errorDescription = responseCheckIbanDTO.getErrors().get(0).getDescription();
+        }
       } catch (JacksonException | IbanException exception) {
         errorCode = String.valueOf(e.status());
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
         this.saveUnknown(iban, errorCode, errorDescription);
+        return;
       }
+      this.sendToQueueError(e,iban);
     }
+  }
+  private void sendToQueueError(Exception e, IbanQueueDTO iban) {
+
+    final MessageBuilder<?> errorMessage = MessageBuilder.withPayload(iban)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_SRC_TYPE,
+            IbanConstants.KAFKA)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_SRC_SERVER,
+            IbanConstants.BROKER_IBAN)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_SRC_TOPIC,
+            IbanConstants.TOPIC_IBAN)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_DESCRIPTION,
+            IbanConstants.ERROR_IBAN)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_RETRYABLE, true)
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_STACKTRACE, e.getStackTrace())
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_CLASS, e.getClass())
+        .setHeader(IbanConstants.ERROR_MSG_HEADER_MESSAGE, e.getMessage());
+    errorProducer.sendEvent(errorMessage.build());
   }
 
   private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO) {
