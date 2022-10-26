@@ -1,4 +1,4 @@
-package it.gov.pagopa.iban.event;
+package it.gov.pagopa.iban.event.consumer;
 
 import it.gov.pagopa.iban.dto.IbanQueueDTO;
 import it.gov.pagopa.iban.service.IbanService;
