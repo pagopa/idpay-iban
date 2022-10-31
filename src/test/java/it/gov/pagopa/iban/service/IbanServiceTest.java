@@ -164,6 +164,16 @@ class IbanServiceTest {
       return null;
     }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
 
+    final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
+    Mockito.doAnswer(invocationOnMock -> {
+      ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO.getInitiativeId());
+      ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO.getIban());
+      ibanQueueWalletDTO.setStatus(IbanConstants.OK);
+      ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
+      return null;
+    }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
+
     try {
       ibanService.saveIban(IBAN_QUEUE_DTO);
     } catch (FeignException e) {
@@ -217,6 +227,16 @@ class IbanServiceTest {
       return null;
     }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
 
+    final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
+    Mockito.doAnswer(invocationOnMock -> {
+      ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO_UNKNOWN.getInitiativeId());
+      ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
+      ibanQueueWalletDTO.setStatus(IbanConstants.UNKNOWN_PSP);
+      ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
+      return null;
+    }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
+
     ibanService.saveIban(IBAN_QUEUE_DTO_UNKNOWN);
 
     assertNotNull(IBAN_QUEUE_DTO_UNKNOWN);
@@ -256,6 +276,17 @@ class IbanServiceTest {
       IBAN_MODEL_EMPTY_UNKNOWN.setErrorDescription(response.getErrors().get(0).getDescription());
       return null;
     }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
+
+    final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
+    Mockito.doAnswer(invocationOnMock -> {
+      ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO_UNKNOWN.getInitiativeId());
+      ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
+      ibanQueueWalletDTO.setStatus(IbanConstants.UNKNOWN_PSP);
+      ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
+      return null;
+    }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
+
     ibanService.saveIban(IBAN_QUEUE_DTO_UNKNOWN);
     assertNotNull(IBAN_QUEUE_DTO_UNKNOWN);
     assertNotNull(IBAN_MODEL_EMPTY_UNKNOWN);
@@ -297,6 +328,17 @@ class IbanServiceTest {
       IBAN_MODEL_EMPTY_UNKNOWN.setErrorDescription(response.getErrors().get(0).getDescription());
       return null;
     }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
+
+    final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
+    Mockito.doAnswer(invocationOnMock -> {
+      ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO_UNKNOWN.getInitiativeId());
+      ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
+      ibanQueueWalletDTO.setStatus(IbanConstants.UNKNOWN_PSP);
+      ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
+      return null;
+    }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
+
     ibanService.saveIban(IBAN_QUEUE_DTO_UNKNOWN);
     assertNotNull(IBAN_QUEUE_DTO_UNKNOWN);
     assertNotNull(IBAN_MODEL_EMPTY_UNKNOWN);
