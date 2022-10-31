@@ -1,63 +1,19 @@
 microservice-chart:
-  namespace: "idpay"
-  nameOverride: ""
-  fullnameOverride: ""
-
   image:
     repository: cstardcommonacr.azurecr.io/idpayiban
     tag: latest
     pullPolicy: Always
 
-  livenessProbe:
-    httpGet:
-      path: /actuator/health
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
-  readinessProbe:
-    httpGet:
-      path: /actuator/health
-      port: 8080
-    initialDelaySeconds: 60
-    failureThreshold: 6
-    periodSeconds: 10
-
-  deployment:
-    create: true
-
-  service:
-    create: true
-    type: ClusterIP
-    port: 8080
-
   ingress:
-    create: true
     host: "dev01.idpay.internal.dev.cstar.pagopa.it"
-    path: /idpayiban/(.*)
-
-  serviceAccount:
-    create: false
-    annotations: {}
-    name: ""
-
-  podAnnotations: {}
-
-  podSecurityContext:
-    seccompProfile:
-      type: RuntimeDefault
-
-  securityContext:
-    allowPrivilegeEscalation: false
 
   resources:
     requests:
       memory: "256Mi"
       cpu: "40m"
     limits:
-      memory: "2Gi"
-      cpu: "200m"
+      memory: "4Gi"
+      cpu: "300m"
 
 #  autoscaling:
 #    enable: true
@@ -80,27 +36,11 @@ microservice-chart:
 #          targetValue: "30"
       
   envConfig:
-    MONGODB_DBNAME: idpay
-    APPLICATIONINSIGHTS_ROLE_NAME: "idpayiban"
-    APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: "OFF"
-    APPLICATIONINSIGHTS_INSTRUMENTATION_MICROMETER_ENABLED: "false"
+    JAVA_TOOL_OPTIONS: '-Xms128m -Xmx4g -javaagent:/app/applicationinsights-agent.jar'
 
-  envConfigMapExternals:
-    idpay-common:
-      TZ: tz
-      JAVA_TOOL_OPTIONS: java_tool_options
-      
   envSecret:
     aks-api-url: cstar-d-weu-dev01-aks-apiserver-url
-    MONGODB_URI: mongodb-connection-string
-#    APPLICATIONINSIGHTS_CONNECTION_STRING: appinsights-instrumentation-key
 
   keyvault:
     name: "cstar-d-idpay-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-
-  # nodeSelector: {}
-
-  # tolerations: []
-
-  # affinity: {}

@@ -1,14 +1,14 @@
 package it.gov.pagopa.iban.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-
 public class IbanDTO {
-    String iban;
-    String description;
-    String holderBank;
-    String channel;
+  private String iban;
+  private String checkIbanStatus;
+  private String holderBank;
+  private String channel;
+  private String description;
 }

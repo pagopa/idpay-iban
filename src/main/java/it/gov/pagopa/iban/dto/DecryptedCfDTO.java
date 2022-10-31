@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorDTO {
+public class DecryptedCfDTO {
 
-  Integer code = null;
-
-  String message = null;
+  private String pii;
 
 }
-

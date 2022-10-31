@@ -1,0 +1,82 @@
+api.key.decrypt: ${PDV_DECRYPT_API_KEY:}
+kafka.topic.checkiban: ${KAFKA_TOPIC_CHECKIBAN:}
+logging:
+  level:
+    it.gov.pagopa: ${LOG_LEVEL_PAGOPA:DEBUG}
+    org:
+      springframework:
+        boot: ${LOG_LEVEL_SPRING_BOOT:INFO}
+        cloud: ${LOG_LEVEL_SPRING_CLOUD:WARN}
+        data: ${LOG_LEVEL_SPRING_DATA:INFO}
+    root: ${LOG_LEVEL_ROOT:INFO}
+rest-client:
+  checkiban:
+    apikey: ${CHECKIBAN_API_KEY:}
+    authSchema: ${CHECKIBAN_AUTHSCHEMA:}
+    base-url: ${CHECKIBAN_BASE_URL:}
+    serviceCode: ${CHECKIBAN_SERVICE_CODE:pagopa-checkiban}
+    url: ${CHECKIBAN_URL:}
+  decrypt:
+    base-url: ${PDV_DECRYPT_BASE_URL:}
+    cf: ${PDV_DECRYPT_SERVICE_CODE:pdv-ms-tokenizer}
+spring:
+  application:
+    name: idpay-iban
+  cloud:
+    stream:
+      binders:
+        kafka-iban:
+          environment:
+            spring.cloud.stream.kafka.binder:
+              brokers: ${KAFKA_BINDER_BROKER_ENDPOINT_LIST:}
+              configuration.sasl.jaas.config: ${KAFKA_IBAN_SASL_JAAS_CONFIG:}
+          type: kafka
+        kafka-wallet:
+          environment.spring.cloud.stream.kafka.binder:
+            brokers: ${KAFKA_BINDER_BROKER_ENDPOINT_LIST:}
+            configuration.sasl.jaas.config: ${KAFKA_WALLET_SASL_JAAS_CONFIG:}
+          type: kafka
+        kafka-errors:
+          environment.spring.cloud.stream.kafka.binder:
+            brokers: ${KAFKA_BINDER_BROKER_ENDPOINT_ERRORS:}
+            configuration.sasl.jaas.config: ${KAFKA_ERRORS_SASL_JAAS_CONFIG:}
+          type: kafka
+      bindings:
+        IbanQueue-in-0:
+          binder: kafka-iban
+          content-type: ${KAFKA_CONTENT_TYPE:application/json}
+          destination: ${KAFKA_TOPIC_IBAN:}
+          group: ${KAFKA_CHECKIBAN_CONSUMER_GROUP:}
+        IbanQueue-out-0:
+          binder: kafka-wallet
+          content-type: ${KAFKA_CONTENT_TYPE:application/json}
+          destination: ${KAFKA_TOPIC_WALLET:}
+        IbanQueue-out-1:
+          binder: kafka-errors
+          content-type: ${KAFKA_CONTENT_TYPE:application/json}
+          destination: ${KAFKA_TOPIC_ERRORS:}
+      function:
+        definition: IbanQueue
+      kafka:
+        binder:
+          auto-create-topics: false
+          configuration:
+            heartbeat.interval.ms: 30000
+            sasl.mechanism: ${KAFKA_IBAN_SASL_MECHANISM:}
+            security.protocol: ${KAFKA_IBAN_SECURITY_PROTOCOL:}
+            session.timeout.ms: 60000
+          consumerProperties:
+            connections.max.idle.ms: 300000
+            key:
+              deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            socket.connection.setup.timeout:
+              max.ms: 200000
+              ms: 100000
+            value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  config:
+    activate:
+      on-profile: default
+  data:
+    mongodb:
+      database: ${MONGODB_DBNAME}
+      uri: ${MONGODB_URI}

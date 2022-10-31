@@ -1,8 +1,11 @@
 package it.gov.pagopa.iban.service;
 
 import it.gov.pagopa.iban.dto.IbanDTO;
+import it.gov.pagopa.iban.dto.IbanListDTO;
+import it.gov.pagopa.iban.dto.IbanQueueDTO;
 
 public interface IbanService {
-    void putIban(String initiativeId, String userId, String iban, String description);
-    IbanDTO getIban(String initiativeId, String userId);
+    IbanListDTO getIbanList(String userId);
+    void saveIban(IbanQueueDTO iban);
+    IbanDTO getIban(String iban, String userId);
 }
