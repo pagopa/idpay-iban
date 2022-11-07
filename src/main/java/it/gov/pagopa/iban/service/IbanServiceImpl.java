@@ -81,14 +81,7 @@ public class IbanServiceImpl implements IbanService {
         log.info("CheckIban's answer: " + checkIbanDTO);
         this.saveOk(iban, checkIbanDTO);
       } else {
-        IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
-            .userId(iban.getUserId())
-            .iban(iban.getIban())
-            .initiativeId(iban.getInitiativeId())
-            .status(IbanConstants.KO)
-            .queueDate(LocalDateTime.now().toString())
-            .build();
-        ibanProducer.sendIban(ibanQueueWalletDTO);
+        sendIbanToWallet(iban,IbanConstants.KO);
       }
     } catch (FeignException e) {
       log.info("Exception: " + e.getMessage());
@@ -116,6 +109,18 @@ public class IbanServiceImpl implements IbanService {
       this.sendToQueueError(e,iban);
     }
   }
+
+  private void sendIbanToWallet(IbanQueueDTO iban, String status) {
+    IbanQueueWalletDTO ibanQueueWalletDTO = IbanQueueWalletDTO.builder()
+        .userId(iban.getUserId())
+        .iban(iban.getIban())
+        .initiativeId(iban.getInitiativeId())
+        .status(status)
+        .queueDate(LocalDateTime.now().toString())
+        .build();
+    ibanProducer.sendIban(ibanQueueWalletDTO);
+  }
+
   private void sendToQueueError(Exception e, IbanQueueDTO iban) {
 
     final MessageBuilder<?> errorMessage = MessageBuilder.withPayload(iban)
@@ -147,6 +152,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
     ibanRepository.save(ibanModel);
 
+    this.sendIbanToWallet(iban,IbanConstants.OK);
   }
 
   private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription) {
@@ -162,6 +168,9 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setErrorDescription(errorDescription);
     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
     ibanRepository.save(ibanModel);
+
+    this.sendIbanToWallet(iban,IbanConstants.UNKNOWN_PSP);
+
   }
 
   @Override
