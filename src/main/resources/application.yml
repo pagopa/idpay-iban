@@ -61,18 +61,25 @@ spring:
         binder:
           auto-create-topics: false
           configuration:
-            heartbeat.interval.ms: 30000
-            sasl.mechanism: ${KAFKA_IBAN_SASL_MECHANISM:}
-            security.protocol: ${KAFKA_IBAN_SECURITY_PROTOCOL:}
-            session.timeout.ms: 60000
-          consumerProperties:
-            connections.max.idle.ms: 300000
-            key:
-              deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            socket.connection.setup.timeout:
-              max.ms: 200000
-              ms: 100000
-            value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            heartbeat.interval.ms: ${KAFKA_CONFIG_HEARTBEAT_INTERVAL_MS:3000}
+            session.timeout.ms: ${KAFKA_CONFIG_SESSION_TIMEOUT_MS:30000}
+            request.timeout.ms: ${KAFKA_CONFIG_REQUEST_TIMEOUT_MS:60000}
+            sasl.mechanism: ${KAFKA_CONFIG_SASL_MECHANISM:PLAIN}
+            security.protocol: ${KAFKA_CONFIG_SECURITY_PROTOCOL:SASL_SSL}
+        bindings:
+          IbanQueue-in-0:
+            consumer:
+              startOffset: ${KAFKA_IBAN_REQUEST_START_OFFSET:${KAFKA_CONSUMER_CONFIG_START_OFFSET:earliest}}
+              autoCommitOffset: ${KAFKA_IBAN_AUTO_COMMIT:${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT:true}}
+              standardHeaders: ${KAFKA_IBAN_STANDARD_HEADERS:${KAFKA_CONSUMER_CONFIG_STANDARD_HEADERS:both}}
+              configuration:
+                max.poll:
+                  records: ${KAFKA_IBAN_MAX_POLL_SIZE:${KAFKA_CONSUMER_CONFIG_MAX_POLL_SIZE:500}}
+                  interval.ms: ${KAFKA_IBAN_INTERVAL_TIMEOUT_MS:${KAFKA_CONFIG_MAX_POLL_INTERVAL_TIMEOUT_MS:300000}}
+                connections.max.idle.ms: ${KAFKA_IBAN_REQUEST_CONNECTIONS_MAX_IDLE_MS:${KAFKA_CONSUMER_CONFIG_CONNECTIONS_MAX_IDLE_MS:180000}}
+                socket.connection.setup.timeout:
+                  max.ms: ${KAFKA_IBAN_REQUEST_CONNECTION_TIMEOUT_MAX_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS:200000}}
+                  ms: ${KAFKA_IBAN_REQUEST_CONNECTION_TIMEOUT_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS:100000}}
   config:
     activate:
       on-profile: default
