@@ -12,10 +12,8 @@ public class IbanConstants {
   public static final String ERROR_MSG_HEADER_STACKTRACE = "stacktrace";
   public static final String ERROR_MSG_HEADER_CLASS = "rootCauseClass";
   public static final String ERROR_MSG_HEADER_MESSAGE = "rootCauseMessage";
-  public static final String TOPIC_IBAN = "idpay-checkiban-evaluation";
   public static final String KAFKA = "kafka";
-  public static final String BROKER_IBAN = "cstar-d-idpay-evh-ns-00.servicebus.windows.net:9093";
-  public static final String ERROR_IBAN = "error to ADD new IBAN";
+  public static final String ERROR_IBAN = "Error sending event to queue";
   private IbanConstants(){
 
   }
