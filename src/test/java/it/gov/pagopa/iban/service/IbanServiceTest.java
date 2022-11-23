@@ -196,6 +196,64 @@ class IbanServiceTest {
   }
 
   @Test
+  void save_iban_ok_queue_error() {
+    ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
+        PAYLOAD_DTO);
+    Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO.getUserId()))
+        .thenReturn(DECRYPTED_CF_DTO);
+    Mockito.when(
+            checkIbanRestConnector.checkIban(IBAN_QUEUE_DTO.getIban(), DECRYPTED_CF_DTO.getPii()))
+        .thenReturn(response);
+    Mockito.doAnswer(invocationOnMock -> {
+      IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
+      IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
+      IBAN_MODEL_EMPTY.setChannel(IBAN_QUEUE_DTO.getChannel());
+      IBAN_MODEL_EMPTY.setDescription(IBAN_QUEUE_DTO.getDescription());
+      IBAN_MODEL_EMPTY.setQueueDate(LocalDateTime.parse(IBAN_QUEUE_DTO.getQueueDate()));
+      IBAN_MODEL_EMPTY.setCheckIbanResponseDate(LocalDateTime.now());
+      IBAN_MODEL_EMPTY.setCheckIbanStatus(response.getPayload().getValidationStatus());
+      IBAN_MODEL_EMPTY.setBicCode(response.getPayload().getBankInfo().getBicCode());
+      IBAN_MODEL_EMPTY.setHolderBank(response.getPayload().getBankInfo().getBusinessName());
+      return null;
+    }).when(ibanRepositoryMock).save(Mockito.any(IbanModel.class));
+
+    final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
+    Mockito.doAnswer(invocationOnMock -> {
+      ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO.getUserId());
+      ibanQueueWalletDTO.setInitiativeId(IBAN_QUEUE_DTO.getInitiativeId());
+      ibanQueueWalletDTO.setIban(IBAN_QUEUE_DTO.getIban());
+      ibanQueueWalletDTO.setStatus(IbanConstants.OK);
+      ibanQueueWalletDTO.setQueueDate(LocalDateTime.now().toString());
+      return null;
+    }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
+
+    Mockito.doThrow(new IbanException(400, "")).when(ibanProducer)
+        .sendIban(Mockito.any());
+
+    try {
+      ibanService.saveIban(IBAN_QUEUE_DTO);
+    } catch (FeignException e) {
+      fail();
+    }
+    assertEquals(IBAN_MODEL_EMPTY.getIban(), IBAN_QUEUE_DTO.getIban());
+    assertEquals(IBAN_MODEL_EMPTY.getUserId(), IBAN_QUEUE_DTO.getUserId());
+    assertEquals(IBAN_MODEL_EMPTY.getChannel(), IBAN_QUEUE_DTO.getChannel());
+    assertEquals(IBAN_MODEL_EMPTY.getDescription(), IBAN_QUEUE_DTO.getDescription());
+    assertEquals(IBAN_MODEL_EMPTY.getQueueDate().toString(), IBAN_QUEUE_DTO.getQueueDate());
+    assertEquals(IBAN_MODEL_EMPTY.getCheckIbanStatus(),
+        response.getPayload().getValidationStatus());
+    assertEquals(IBAN_MODEL_EMPTY.getBicCode(), response.getPayload().getBankInfo().getBicCode());
+    assertEquals(IBAN_MODEL_EMPTY.getHolderBank(),
+        response.getPayload().getBankInfo().getBusinessName());
+    assertNotNull(IBAN_MODEL_EMPTY.getCheckIbanResponseDate());
+    assertNull(IBAN_MODEL_EMPTY.getErrorCode());
+    assertNull(IBAN_MODEL_EMPTY.getErrorDescription());
+
+    Mockito.verify(errorProducer, Mockito.times(1)).sendEvent(Mockito.any());
+
+  }
+
+  @Test
   void save_iban_unknown_501() {
     ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
         "PSP 03440 Not Present in Routing Subsystem", null);
