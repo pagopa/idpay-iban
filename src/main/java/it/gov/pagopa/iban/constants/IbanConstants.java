@@ -14,6 +14,8 @@ public class IbanConstants {
   public static final String ERROR_MSG_HEADER_MESSAGE = "rootCauseMessage";
   public static final String KAFKA = "kafka";
   public static final String ERROR_IBAN = "Error sending event to queue";
+  public static final String CHANNEL_IO = "APP_IO";
+
   private IbanConstants(){
 
   }
