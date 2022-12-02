@@ -96,7 +96,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
     ibanRepository.save(ibanModel);
 
-    this.sendIbanToWallet(iban, IbanConstants.OK);
+    this.sendIbanToWallet(iban, IbanConstants.ISSUER_NO_CHECKIBAN);
   }
 
   private void checkIban(IbanQueueDTO iban){

@@ -15,6 +15,7 @@ public class IbanConstants {
   public static final String KAFKA = "kafka";
   public static final String ERROR_IBAN = "Error sending event to queue";
   public static final String CHANNEL_IO = "APP_IO";
+  public static final String ISSUER_NO_CHECKIBAN = "ISSUER_NO_CHECKIBAN";
 
   private IbanConstants(){
 
