@@ -135,18 +135,6 @@ class IbanServiceTest {
   }
 
   @Test
-  void getIbanList_empty() {
-    List<IbanModel> ibanModelList = new ArrayList<>();
-    Mockito.when(ibanRepositoryMock.findByUserId(USER_ID)).thenReturn(ibanModelList);
-    try {
-      ibanService.getIbanList(USER_ID);
-      Assertions.fail();
-    } catch (IbanException e) {
-      assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
-    }
-  }
-
-  @Test
   void save_iban_ok() {
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         PAYLOAD_DTO);

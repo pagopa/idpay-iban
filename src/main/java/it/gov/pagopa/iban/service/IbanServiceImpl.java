@@ -60,10 +60,6 @@ public class IbanServiceImpl implements IbanService {
     List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);
     List<IbanDTO> ibanDTOList = new ArrayList<>();
     IbanListDTO ibanList = new IbanListDTO();
-    if (ibanModelList.isEmpty()) {
-      throw new IbanException(
-          HttpStatus.NOT_FOUND.value(), "No iban associated with the requested userId was found");
-    }
     ibanModelList.forEach(
         iban ->
             ibanDTOList.add(
