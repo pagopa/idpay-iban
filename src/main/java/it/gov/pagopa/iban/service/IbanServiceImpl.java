@@ -60,10 +60,6 @@ public class IbanServiceImpl implements IbanService {
     List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);
     List<IbanDTO> ibanDTOList = new ArrayList<>();
     IbanListDTO ibanList = new IbanListDTO();
-    if (ibanModelList.isEmpty()) {
-      throw new IbanException(
-          HttpStatus.NOT_FOUND.value(), "No iban associated with the requested userId was found");
-    }
     ibanModelList.forEach(
         iban ->
             ibanDTOList.add(
@@ -78,27 +74,48 @@ public class IbanServiceImpl implements IbanService {
   }
 
   public void saveIban(IbanQueueDTO iban) {
+    if(IbanConstants.CHANNEL_IO.equals(iban.getChannel())){
+      log.info("[SAVE_IBAN] New IBAN enrolled from IO: sending to CheckIban");
+      checkIban(iban);
+      return;
+    }
+    log.info("[SAVE_IBAN] New IBAN enrolled from issuer: saving");
+    saveIbanFromIssuer(iban);
+  }
+
+  private void saveIbanFromIssuer(IbanQueueDTO iban) {
+    IbanModel ibanModel = new IbanModel();
+    ibanModel.setUserId(iban.getUserId());
+    ibanModel.setIban(iban.getIban());
+    ibanModel.setChannel(iban.getChannel());
+    ibanModel.setDescription(iban.getDescription());
+    ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
+    ibanRepository.save(ibanModel);
+
+    this.sendIbanToWallet(iban, IbanConstants.ISSUER_NO_CHECKIBAN);
+  }
+
+  private void checkIban(IbanQueueDTO iban){
     ResponseCheckIbanDTO checkIbanDTO;
     try {
       Instant start = Instant.now();
-      log.debug("Calling decrypting service at: " + start);
+      log.debug("[SAVE_IBAN] [CHECK_IBAN] Calling decrypting service at: " + start);
       DecryptedCfDTO decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
       Instant finish = Instant.now();
       long time = Duration.between(start, finish).toMillis();
       log.info(
-          "Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
+          "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
       checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
-      log.info("CF di test: " + decryptedCfDTO.getPii());
-      log.info("CheckIban's answer: " + checkIbanDTO);
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
-        log.info("CheckIban's answer: " + checkIbanDTO);
+        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
         this.saveOk(iban, checkIbanDTO);
       } else {
+        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
-      log.info("Exception: " + e.getMessage());
+      log.info("[SAVE_IBAN] [CHECK_IBAN] Exception: " + e.getMessage());
       log.info(e.contentUTF8());
       String errorCode = null;
       String errorDescription = null;
@@ -117,6 +134,7 @@ public class IbanServiceImpl implements IbanService {
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
+        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
         this.saveUnknown(iban, errorCode, errorDescription);
         return;
       }

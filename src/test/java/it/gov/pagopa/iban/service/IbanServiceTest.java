@@ -80,11 +80,15 @@ class IbanServiceTest {
   private static final String BIC_CODE = "SELBIT2B";
   private static final String VALIDATION_STATUS = "OK";
   private static final String CHANNEL = "APP_IO";
+  private static final String CHANNEL_ISSUER = "ISSUER";
   private static final String DESCRIPTION = "conto intestato";
   private static final IbanModel IBAN_MODEL = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
       BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
   private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID, INITIATIVEID,
       IBAN_OK, CHANNEL,
+      DESCRIPTION, LocalDateTime.now().toString());
+  private static final IbanQueueDTO IBAN_QUEUE_DTO_ISSUER = new IbanQueueDTO(USER_ID, INITIATIVEID,
+      IBAN_OK, CHANNEL_ISSUER,
       DESCRIPTION, LocalDateTime.now().toString());
   private static final IbanQueueDTO IBAN_QUEUE_DTO_KO = new IbanQueueDTO(USER_ID, INITIATIVEID,
       IBAN_KO,
@@ -128,18 +132,6 @@ class IbanServiceTest {
     assertEquals(IBAN_MODEL.getIban(), actual.getIban());
     assertEquals(IBAN_MODEL.getCheckIbanStatus(), actual.getCheckIbanStatus());
     assertEquals(IBAN_MODEL.getHolderBank(), actual.getHolderBank());
-  }
-
-  @Test
-  void getIbanList_empty() {
-    List<IbanModel> ibanModelList = new ArrayList<>();
-    Mockito.when(ibanRepositoryMock.findByUserId(USER_ID)).thenReturn(ibanModelList);
-    try {
-      ibanService.getIbanList(USER_ID);
-      Assertions.fail();
-    } catch (IbanException e) {
-      assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
-    }
   }
 
   @Test
@@ -513,5 +505,11 @@ class IbanServiceTest {
     } catch (IbanException e) {
       assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
     }
+  }
+
+  @Test
+  void save_iban_ok_issuer() {
+    ibanService.saveIban(IBAN_QUEUE_DTO_ISSUER);
+    Mockito.verify(ibanRepositoryMock, Mockito.times(1)).save(Mockito.any(IbanModel.class));
   }
 }
