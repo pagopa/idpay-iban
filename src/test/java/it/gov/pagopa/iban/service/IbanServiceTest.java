@@ -30,6 +30,7 @@ import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
+import it.gov.pagopa.iban.utils.Utilities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +63,8 @@ class IbanServiceTest {
   IbanProducer ibanProducer;
   @MockBean
   ErrorProducer errorProducer;
-
+  @MockBean
+  Utilities utilities;
   @MockBean
   ObjectMapper mapper;
 
