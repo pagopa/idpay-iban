@@ -76,13 +76,22 @@ public class IbanServiceImpl implements IbanService {
   }
 
   public void saveIban(IbanQueueDTO iban) {
+    long startTime = System.currentTimeMillis();
     if(IbanConstants.CHANNEL_IO.equals(iban.getChannel())){
       log.info("[SAVE_IBAN] New IBAN enrolled from IO: sending to CheckIban");
       checkIban(iban);
+      doFinally(startTime);
       return;
     }
     log.info("[SAVE_IBAN] New IBAN enrolled from issuer: saving");
     saveIbanFromIssuer(iban);
+    doFinally(startTime);
+  }
+
+  private void doFinally(long startTime){
+    log.info(
+        "[PERFORMANCE_LOG] [SAVE_IBAN] Time occurred to perform business logic: {} ms",
+        System.currentTimeMillis() - startTime);
   }
 
   private void saveIbanFromIssuer(IbanQueueDTO iban) {
