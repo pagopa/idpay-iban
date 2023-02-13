@@ -39,8 +39,8 @@ class UtilitiesTest {
 
   private static final String CEF = String.format("CEF:0 srcip=%s ", SRCIP);
   private static final String MSG = " TEST_MSG";
-  private static final String CHANNEL = "CHANNEL";
   private static final String USER_ID = "TEST_USER_ID";
+  private static final String IBAN = "IBAN";
   private static final String INITIATIVE_ID = "TEST_INITIATIVE_ID";
 
   @MockBean
@@ -64,19 +64,29 @@ class UtilitiesTest {
 
   @Test
   void logCheckiban_ok(){
-    utilities.logCheckIbanOK(USER_ID,INITIATIVE_ID);
+    utilities.logCheckIbanOK(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 
   @Test
   void logCheckiban_unknown(){
-    utilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID);
+    utilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 
   @Test
   void logCheckiban_ko(){
-    utilities.logCheckIbanKO(USER_ID,INITIATIVE_ID);
+    utilities.logCheckIbanKO(USER_ID,INITIATIVE_ID,IBAN);
+    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+  }
+  @Test
+  void logSavingIban_ko(){
+    utilities.logSavingIban(USER_ID,INITIATIVE_ID,IBAN);
+    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+  }
+  @Test
+  void logSavingIbanFromIssuer_ko(){
+    utilities.logSavingIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 

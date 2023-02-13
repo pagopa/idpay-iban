@@ -102,6 +102,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setDescription(iban.getDescription());
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
     ibanRepository.save(ibanModel);
+    utilities.logSavingIbanFromIssuer(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.ISSUER_NO_CHECKIBAN);
   }
@@ -121,10 +122,10 @@ public class IbanServiceImpl implements IbanService {
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
         this.saveOk(iban, checkIbanDTO);
-        utilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId());
+        utilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban());
       } else {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
-        utilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId());
+        utilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban());
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
@@ -149,7 +150,7 @@ public class IbanServiceImpl implements IbanService {
       if (e.status() == 501 || e.status() == 502) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
         this.saveUnknown(iban, errorCode, errorDescription);
-        utilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId());
+        utilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban());
         return;
       }
 
@@ -202,6 +203,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
     ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
     ibanRepository.save(ibanModel);
+    utilities.logSavingIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.OK);
   }
@@ -219,6 +221,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setErrorDescription(errorDescription);
     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
     ibanRepository.save(ibanModel);
+    utilities.logSavingIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.UNKNOWN_PSP);
   }
