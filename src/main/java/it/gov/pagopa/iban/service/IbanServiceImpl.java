@@ -68,9 +68,10 @@ public class IbanServiceImpl implements IbanService {
                 new IbanDTO(
                     iban.getIban(),
                     iban.getCheckIbanStatus(),
-                    iban.getHolderBank(),
+                    iban.getDescription(),
                     iban.getChannel(),
-                    iban.getDescription())));
+                    iban.getHolderBank(),
+                    iban.getCheckIbanResponseDate())));
     ibanList.setIbanList(ibanDTOList);
     return ibanList;
   }
@@ -230,10 +231,11 @@ public class IbanServiceImpl implements IbanService {
             .findByIbanAndUserId(iban, userId)
             .orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found."));
     return new IbanDTO(
-        ibanModel.getIban(),
-        ibanModel.getCheckIbanStatus(),
-        ibanModel.getHolderBank(),
-        ibanModel.getChannel(),
-        ibanModel.getDescription());
+            ibanModel.getIban(),
+            ibanModel.getCheckIbanStatus(),
+            ibanModel.getDescription(),
+            ibanModel.getChannel(),
+            ibanModel.getHolderBank(),
+            ibanModel.getCheckIbanResponseDate());
   }
 }
