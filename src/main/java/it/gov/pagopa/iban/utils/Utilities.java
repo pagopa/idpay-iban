@@ -21,33 +21,39 @@ public class Utilities {
     }
   }
 
-  private static final String CEF = String.format("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2|vs=172.16.151.21:80 event=Onboarding srcip=%s srcport=17548 dstip=172.16.128.37 dstport=82",
-      SRCIP);
+  private static final String CEF = String.format("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s", SRCIP);
   private static final String MSG = " msg=";
   private static final String USER = "suser=";
-  private static final String CS1 = "cs1Label=iniziativeId cs1=";
+  private static final String INITIATIVE_ID = "initiativeId";
+  private static final String IBAN = "iban";
   final Logger logger = Logger.getLogger("AUDIT");
 
 
-  private String buildLog(String eventLog, String userId, String initiativeId) {
-    return CEF + MSG + eventLog + " " + USER + userId + " " + CS1 + initiativeId;
+  private String buildLog(String eventLog, String userId, String initiativeId, String iban) {
+    return CEF + MSG + eventLog + " " + USER + userId + " " + INITIATIVE_ID + initiativeId + " " + IBAN + iban;
   }
 
-  public void logCheckIbanOK(String userId, String initiativeId) {
-    String testLog = this.buildLog("Checkiban's answer was OK ", userId,
-        initiativeId);
+  public void logCheckIbanOK(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("Checkiban's answer was OK ", userId, initiativeId, iban);
     logger.info(testLog);
   }
 
-  public void logCheckIbanUnknown(String userId, String initiativeId) {
-    String testLog = this.buildLog("Checkiban's answer was Unknown ", userId,
-        initiativeId);
+  public void logCheckIbanUnknown(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("Checkiban's answer was Unknown ", userId, initiativeId, iban);
     logger.info(testLog);
   }
 
-  public void logCheckIbanKO(String userId, String initiativeId) {
-    String testLog = this.buildLog("Checkiban's answer was KO ", userId,
-        initiativeId);
+  public void logCheckIbanKO(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("Checkiban's answer was KO ", userId, initiativeId, iban);
+    logger.info(testLog);
+  }
+
+  public void logEnrollIban(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("New IBAN enrolled from IO ", userId, initiativeId, iban);
+    logger.info(testLog);
+  }
+  public void logEnrollIbanFromIssuer(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("New IBAN enrolled from issuer ", userId, initiativeId, iban);
     logger.info(testLog);
   }
 }
