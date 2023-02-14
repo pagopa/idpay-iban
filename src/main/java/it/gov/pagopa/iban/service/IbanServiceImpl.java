@@ -17,6 +17,7 @@ import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
+import it.gov.pagopa.iban.utils.Utilities;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ public class IbanServiceImpl implements IbanService {
 
   @Autowired IbanProducer ibanProducer;
   @Autowired ErrorProducer errorProducer;
+  @Autowired Utilities utilities;
 
   @Value(
       "${spring.cloud.stream.binders.kafka-iban.environment.spring.cloud.stream.kafka.binder.brokers}")
@@ -66,21 +68,31 @@ public class IbanServiceImpl implements IbanService {
                 new IbanDTO(
                     iban.getIban(),
                     iban.getCheckIbanStatus(),
-                    iban.getHolderBank(),
+                    iban.getDescription(),
                     iban.getChannel(),
-                    iban.getDescription())));
+                    iban.getHolderBank(),
+                    iban.getCheckIbanResponseDate())));
     ibanList.setIbanList(ibanDTOList);
     return ibanList;
   }
 
   public void saveIban(IbanQueueDTO iban) {
+    long startTime = System.currentTimeMillis();
     if(IbanConstants.CHANNEL_IO.equals(iban.getChannel())){
       log.info("[SAVE_IBAN] New IBAN enrolled from IO: sending to CheckIban");
       checkIban(iban);
+      doFinally(startTime);
       return;
     }
     log.info("[SAVE_IBAN] New IBAN enrolled from issuer: saving");
     saveIbanFromIssuer(iban);
+    doFinally(startTime);
+  }
+
+  private void doFinally(long startTime){
+    log.info(
+        "[PERFORMANCE_LOG] [SAVE_IBAN] Time occurred to perform business logic: {} ms",
+        System.currentTimeMillis() - startTime);
   }
 
   private void saveIbanFromIssuer(IbanQueueDTO iban) {
@@ -110,8 +122,10 @@ public class IbanServiceImpl implements IbanService {
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
         this.saveOk(iban, checkIbanDTO);
+        utilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId());
       } else {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
+        utilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId());
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
@@ -136,6 +150,7 @@ public class IbanServiceImpl implements IbanService {
       if (e.status() == 501 || e.status() == 502) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
         this.saveUnknown(iban, errorCode, errorDescription);
+        utilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId());
         return;
       }
 
@@ -216,10 +231,11 @@ public class IbanServiceImpl implements IbanService {
             .findByIbanAndUserId(iban, userId)
             .orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found."));
     return new IbanDTO(
-        ibanModel.getIban(),
-        ibanModel.getCheckIbanStatus(),
-        ibanModel.getHolderBank(),
-        ibanModel.getChannel(),
-        ibanModel.getDescription());
+            ibanModel.getIban(),
+            ibanModel.getCheckIbanStatus(),
+            ibanModel.getDescription(),
+            ibanModel.getChannel(),
+            ibanModel.getHolderBank(),
+            ibanModel.getCheckIbanResponseDate());
   }
 }
