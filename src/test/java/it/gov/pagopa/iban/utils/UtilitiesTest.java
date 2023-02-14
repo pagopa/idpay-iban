@@ -81,12 +81,12 @@ class UtilitiesTest {
   }
   @Test
   void logSavingIban_ko(){
-    utilities.logSavingIban(USER_ID,INITIATIVE_ID,IBAN);
+    utilities.logEnrollIban(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
   @Test
   void logSavingIbanFromIssuer_ko(){
-    utilities.logSavingIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
+    utilities.logEnrollIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 

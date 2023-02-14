@@ -21,17 +21,16 @@ public class Utilities {
     }
   }
 
-  private static final String CEF = String.format("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2|vs=172.16.151.21:80 event=Iban srcip=%s srcport=17548 dstip=172.16.128.37 dstport=82",
-      SRCIP);
+  private static final String CEF = String.format("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s", SRCIP);
   private static final String MSG = " msg=";
   private static final String USER = "suser=";
-  private static final String CS1 = "cs1Label=iniziativeId cs1=";
-  private static final String CS2 = "cs2Label=iban cs2=";
+  private static final String INITIATIVE_ID = "initiativeId";
+  private static final String IBAN = "iban";
   final Logger logger = Logger.getLogger("AUDIT");
 
 
   private String buildLog(String eventLog, String userId, String initiativeId, String iban) {
-    return CEF + MSG + eventLog + " " + USER + userId + " " + CS1 + initiativeId + CS2 + iban;
+    return CEF + MSG + eventLog + " " + USER + userId + " " + INITIATIVE_ID + initiativeId + " " + IBAN + iban;
   }
 
   public void logCheckIbanOK(String userId, String initiativeId, String iban) {
@@ -49,12 +48,12 @@ public class Utilities {
     logger.info(testLog);
   }
 
-  public void logSavingIban(String userId, String initiativeId, String iban) {
+  public void logEnrollIban(String userId, String initiativeId, String iban) {
     String testLog = this.buildLog("New IBAN enrolled from IO ", userId, initiativeId, iban);
     logger.info(testLog);
   }
-  public void logSavingIbanFromIssuer(String userId, String initiativeId, String iban) {
-    String testLog = this.buildLog("New IBAN enrolled from issuer", userId, initiativeId, iban);
+  public void logEnrollIbanFromIssuer(String userId, String initiativeId, String iban) {
+    String testLog = this.buildLog("New IBAN enrolled from issuer ", userId, initiativeId, iban);
     logger.info(testLog);
   }
 }

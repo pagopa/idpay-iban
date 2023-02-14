@@ -102,7 +102,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setDescription(iban.getDescription());
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
     ibanRepository.save(ibanModel);
-    utilities.logSavingIbanFromIssuer(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
+    utilities.logEnrollIbanFromIssuer(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.ISSUER_NO_CHECKIBAN);
   }
@@ -203,7 +203,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
     ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
     ibanRepository.save(ibanModel);
-    utilities.logSavingIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
+    utilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.OK);
   }
@@ -221,7 +221,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setErrorDescription(errorDescription);
     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
     ibanRepository.save(ibanModel);
-    utilities.logSavingIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
+    utilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.UNKNOWN_PSP);
   }
