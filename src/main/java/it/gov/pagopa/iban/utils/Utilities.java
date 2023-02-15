@@ -24,8 +24,8 @@ public class Utilities {
   private static final String CEF = String.format("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s", SRCIP);
   private static final String MSG = " msg=";
   private static final String USER = "suser=";
-  private static final String INITIATIVE_ID = "initiativeId";
-  private static final String IBAN = "iban";
+  private static final String INITIATIVE_ID = "cs1Label=initiativeId cs1=";
+  private static final String IBAN = "cs2Label=iban cs2=";
   final Logger logger = Logger.getLogger("AUDIT");
 
 
