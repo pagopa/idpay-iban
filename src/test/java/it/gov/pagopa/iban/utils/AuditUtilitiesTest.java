@@ -25,8 +25,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
-@ContextConfiguration(classes = {Utilities.class,InetAddress.class})
-class UtilitiesTest {
+@ContextConfiguration(classes = {AuditUtilities.class,InetAddress.class})
+class AuditUtilitiesTest {
   private static final String SRCIP;
 
   static {
@@ -37,7 +37,6 @@ class UtilitiesTest {
     }
   }
 
-  private static final String CEF = String.format("CEF:0 srcip=%s ", SRCIP);
   private static final String MSG = " TEST_MSG";
   private static final String USER_ID = "TEST_USER_ID";
   private static final String IBAN = "IBAN";
@@ -46,7 +45,7 @@ class UtilitiesTest {
   @MockBean
   Logger logger;
   @Autowired
-  Utilities utilities;
+  AuditUtilities auditUtilities;
   @MockBean
   InetAddress inetAddress;
   MemoryAppender memoryAppender;
@@ -64,29 +63,29 @@ class UtilitiesTest {
 
   @Test
   void logCheckiban_ok(){
-    utilities.logCheckIbanOK(USER_ID,INITIATIVE_ID,IBAN);
+    auditUtilities.logCheckIbanOK(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 
   @Test
   void logCheckiban_unknown(){
-    utilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID,IBAN);
+    auditUtilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 
   @Test
   void logCheckiban_ko(){
-    utilities.logCheckIbanKO(USER_ID,INITIATIVE_ID,IBAN);
+    auditUtilities.logCheckIbanKO(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
   @Test
   void logSavingIban_ko(){
-    utilities.logEnrollIban(USER_ID,INITIATIVE_ID,IBAN);
+    auditUtilities.logEnrollIban(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
   @Test
   void logSavingIbanFromIssuer_ko(){
-    utilities.logEnrollIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
+    auditUtilities.logEnrollIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
     assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
   }
 
