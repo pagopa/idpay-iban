@@ -34,7 +34,9 @@ spring:
           environment:
             spring.cloud.stream.kafka.binder:
               brokers: ${KAFKA_BINDER_BROKER_ENDPOINT_LIST:}
-              configuration.sasl.jaas.config: ${KAFKA_IBAN_SASL_JAAS_CONFIG:}
+              configuration:
+                sasl.jaas.config: ${KAFKA_IBAN_SASL_JAAS_CONFIG:}
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
           type: kafka
         kafka-wallet:
           environment.spring.cloud.stream.kafka.binder:
