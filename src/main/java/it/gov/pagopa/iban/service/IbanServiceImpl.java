@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,16 +231,19 @@ public class IbanServiceImpl implements IbanService {
 
   @Override
   public IbanDTO getIban(String iban, String userId) {
-    IbanModel ibanModel =
+    List<IbanModel> ibanModelList =
         ibanRepository
-            .findByIbanAndUserId(iban, userId)
-            .orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found."));
+            .findByIbanAndUserId(iban, userId);
+    if (ibanModelList.isEmpty()) {
+      throw new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found.");
+    }
+    ibanModelList.sort(Comparator.comparing(IbanModel::getCheckIbanResponseDate).reversed());
     return new IbanDTO(
-            ibanModel.getIban(),
-            ibanModel.getCheckIbanStatus(),
-            ibanModel.getDescription(),
-            ibanModel.getChannel(),
-            ibanModel.getHolderBank(),
-            ibanModel.getCheckIbanResponseDate());
+            ibanModelList.get(0).getIban(),
+            ibanModelList.get(0).getCheckIbanStatus(),
+            ibanModelList.get(0).getDescription(),
+            ibanModelList.get(0).getChannel(),
+            ibanModelList.get(0).getHolderBank(),
+            ibanModelList.get(0).getCheckIbanResponseDate());
   }
 }
