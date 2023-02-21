@@ -32,10 +32,8 @@ import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import it.gov.pagopa.iban.utils.AuditUtilities;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -486,8 +484,11 @@ class IbanServiceTest {
 
   @Test
   void getIban_ok() {
+    IbanModel ibanModelOld = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
+            BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
+    ibanModelOld.setCheckIbanResponseDate(LocalDateTime.now().minusDays(2));
     Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
-        .thenReturn(Optional.of(IBAN_MODEL));
+        .thenReturn(new ArrayList<>(Arrays.asList(ibanModelOld, IBAN_MODEL)));
     IbanDTO ibanDTO = ibanService.getIban(IBAN_OK, USER_ID);
 
     assertEquals(ibanDTO.getIban(), IBAN_MODEL.getIban());
@@ -495,12 +496,13 @@ class IbanServiceTest {
     assertEquals(ibanDTO.getDescription(), IBAN_MODEL.getDescription());
     assertEquals(ibanDTO.getHolderBank(), IBAN_MODEL.getHolderBank());
     assertEquals(ibanDTO.getChannel(), IBAN_MODEL.getChannel());
+    assertEquals(ibanDTO.getCheckIbanResponseDate(), IBAN_MODEL.getCheckIbanResponseDate());
   }
 
   @Test
   void getIban_ko() {
     Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
-        .thenReturn(Optional.empty());
+        .thenReturn(Collections.emptyList());
     try {
       ibanService.getIban(IBAN_OK, USER_ID);
       Assertions.fail();
