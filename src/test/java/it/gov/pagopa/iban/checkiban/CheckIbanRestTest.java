@@ -50,7 +50,7 @@ class CheckIbanRestTest {
   @Test
   void checkIban(){
 
-    ResponseCheckIbanDTO checkIbanDTO = connector.checkIban(PAY_OFF_INSTR,FISCAL_CODE).getBody();
+    ResponseCheckIbanDTO checkIbanDTO = connector.checkIban(PAY_OFF_INSTR,FISCAL_CODE);
     assertNotNull(checkIbanDTO);
 
   }
