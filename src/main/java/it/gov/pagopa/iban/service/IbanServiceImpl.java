@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -120,15 +121,17 @@ public class IbanServiceImpl implements IbanService {
       long time = Duration.between(start, finish).toMillis();
       log.info(
           "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
-      checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+      ResponseEntity<ResponseCheckIbanDTO> responseCheckIban = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+      String checkIbanRequestId = String.valueOf(responseCheckIban.getHeaders().get("x-request-id"));
+      checkIbanDTO = responseCheckIban.getBody();
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
-        this.saveOk(iban, checkIbanDTO);
-        auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban());
+        this.saveOk(iban, checkIbanDTO, checkIbanRequestId);
+        auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
       } else {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
-        auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban());
+        auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban(), checkIbanRequestId);
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
@@ -152,8 +155,9 @@ public class IbanServiceImpl implements IbanService {
       }
       if (e.status() == 501 || e.status() == 502) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
-        this.saveUnknown(iban, errorCode, errorDescription);
-        auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban());
+        String checkIbanRequestId = String.valueOf(e.responseHeaders().get("x-request-id"));
+        this.saveUnknown(iban, errorCode, errorDescription, checkIbanRequestId);
+        auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
         return;
       }
 
@@ -194,7 +198,7 @@ public class IbanServiceImpl implements IbanService {
     errorProducer.sendEvent(errorMessage.build());
   }
 
-  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO) {
+  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO, String requestId) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -205,13 +209,14 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
     ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
     ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+    ibanModel.setCheckIbanRequestId(requestId);
     ibanRepository.save(ibanModel);
     auditUtilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.OK);
   }
 
-  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription) {
+  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription, String requestId) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -223,6 +228,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
     ibanModel.setErrorDescription(errorDescription);
     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
+    ibanModel.setCheckIbanRequestId(requestId);
     ibanRepository.save(ibanModel);
     auditUtilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
