@@ -124,7 +124,7 @@ public class IbanServiceImpl implements IbanService {
           "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
       ResponseEntity<ResponseCheckIbanDTO> responseCheckIban = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
       HttpHeaders headers = responseCheckIban.getHeaders();
-      log.info("[SAVE_IBAN] [CHECK_IBAN] x-request-id: " + headers.get("x-request-id"));
+      log.info("[SAVE_IBAN] [CHECK_IBAN] Response header: " + headers);
       checkIbanDTO = responseCheckIban.getBody();
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
@@ -138,7 +138,6 @@ public class IbanServiceImpl implements IbanService {
       }
     } catch (FeignException e) {
       log.info("[SAVE_IBAN] [CHECK_IBAN] Exception: " + e.getMessage());
-      log.info("[SAVE_IBAN] [CHECK_IBAN] x-request-id: " + e.responseHeaders().get("x-request-id"));
       log.info(e.contentUTF8());
       String errorCode = null;
       String errorDescription = null;
