@@ -4,7 +4,6 @@ import it.gov.pagopa.iban.dto.RequestCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 @Slf4j
 @Service
@@ -26,7 +25,7 @@ public class CheckIbanRestConnectorImpl implements CheckIbanRestConnector {
 
 
   @Override
-  public ResponseEntity<ResponseCheckIbanDTO> checkIban(String payOffInstr, String fiscalCode) {
+  public ResponseCheckIbanDTO checkIban(String payOffInstr, String fiscalCode) {
     RequestCheckIbanDTO requestCheckIbanDTO=new RequestCheckIbanDTO();
     requestCheckIbanDTO.getAccount().setValue(payOffInstr);
     requestCheckIbanDTO.getAccount().setValueType(IBAN);
