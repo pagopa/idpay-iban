@@ -41,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -72,7 +73,6 @@ class IbanServiceTest {
   private static final String IBAN_OK = "IT43O0326822300052755845000";
   private static final String IBAN_UNKNOWN = "IT43Y0344003212000000242300";
   private static final String IBAN_KO = "IT10M0200805024000103019250";
-  private static final String IBAN_WRONG = "it99C1234567890123456789012222";
   private static final String CHECK_IBAN_STATUS = "OK";
   private static final String CHECK_IBAN_STATUS_KO = "KO";
 
@@ -142,7 +142,7 @@ class IbanServiceTest {
         .thenReturn(DECRYPTED_CF_DTO);
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_QUEUE_DTO.getIban(), DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(ResponseEntity.of(Optional.of(response)));
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
       IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
@@ -195,7 +195,7 @@ class IbanServiceTest {
         .thenReturn(DECRYPTED_CF_DTO);
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_QUEUE_DTO.getIban(), DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(ResponseEntity.of(Optional.of(response)));
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
       IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
@@ -409,7 +409,7 @@ class IbanServiceTest {
 
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_KO, DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(ResponseEntity.of(Optional.of(response)));
     final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
     Mockito.doAnswer(invocationOnMock -> {
       ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_KO.getUserId());
@@ -439,7 +439,7 @@ class IbanServiceTest {
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
     Mockito.doThrow(new FeignException.BadRequest("", request, new byte[0], null))
-        .when(checkIbanRestConnector).checkIban(IBAN_WRONG, DECRYPTED_CF_DTO.getPii());
+        .when(checkIbanRestConnector).checkIban(IBAN_KO, DECRYPTED_CF_DTO.getPii());
 
     try {
       ibanService.saveIban(IBAN_QUEUE_DTO_KO);
