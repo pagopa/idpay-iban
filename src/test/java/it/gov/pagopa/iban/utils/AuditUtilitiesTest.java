@@ -1,54 +1,19 @@
 package it.gov.pagopa.iban.utils;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
-import it.gov.pagopa.iban.exception.IbanException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith({SpringExtension.class, MockitoExtension.class})
-@ContextConfiguration(classes = {AuditUtilities.class,InetAddress.class})
 class AuditUtilitiesTest {
-  private static final String SRCIP;
-
-  static {
-    try {
-      SRCIP = InetAddress.getLocalHost().getHostAddress();
-    } catch (UnknownHostException e) {
-      throw new IbanException(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-    }
-  }
-
-  private static final String MSG = " TEST_MSG";
   private static final String USER_ID = "TEST_USER_ID";
   private static final String IBAN = "IBAN";
   private static final String INITIATIVE_ID = "TEST_INITIATIVE_ID";
+  private static final String REQUEST_ID = "TEST_REQUEST_ID";
 
-  @MockBean
-  Logger logger;
-  @Autowired
-  AuditUtilities auditUtilities;
-  @MockBean
-  InetAddress inetAddress;
-  MemoryAppender memoryAppender;
+  private final AuditUtilities auditUtilities = new AuditUtilities();
+  private MemoryAppender memoryAppender;
 
   @BeforeEach
   public void setup() {
@@ -60,72 +25,102 @@ class AuditUtilitiesTest {
     memoryAppender.start();
   }
 
+  private void checkCommonFields() {
+    Assertions.assertTrue(memoryAppender.contains(ch.qos.logback.classic.Level.INFO,USER_ID));
+    Assertions.assertTrue(memoryAppender.contains(ch.qos.logback.classic.Level.INFO,IBAN));
+    Assertions.assertTrue(memoryAppender.contains(ch.qos.logback.classic.Level.INFO,INITIATIVE_ID));
+
+    Assertions.assertEquals(1, memoryAppender.getLoggedEvents().size());
+  }
 
   @Test
   void logCheckiban_ok(){
-    auditUtilities.logCheckIbanOK(USER_ID,INITIATIVE_ID,IBAN);
-    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+    auditUtilities.logCheckIbanOK(USER_ID,INITIATIVE_ID,IBAN, REQUEST_ID);
+    checkCommonFields();
+
+    Assertions.assertEquals(
+            ("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s msg=Checkiban's answer was OK suser=%s " +
+                    "cs1Label=initiativeId cs1=%s cs2Label=iban cs2=%s cs3Label=checkIbanRequestId cs3=%s")
+                    .formatted(
+                            AuditUtilities.SRCIP,
+                            USER_ID,
+                            INITIATIVE_ID,
+                            IBAN,
+                            REQUEST_ID
+                    ),
+            memoryAppender.getLoggedEvents().get(0).getFormattedMessage()
+    );
   }
 
   @Test
   void logCheckiban_unknown(){
-    auditUtilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID,IBAN);
-    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+    auditUtilities.logCheckIbanUnknown(USER_ID,INITIATIVE_ID,IBAN, REQUEST_ID);
+    checkCommonFields();
+
+    Assertions.assertEquals(
+            ("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s msg=Checkiban's answer was UNKNOWN suser=%s " +
+                    "cs1Label=initiativeId cs1=%s cs2Label=iban cs2=%s cs3Label=checkIbanRequestId cs3=%s")
+                    .formatted(
+                            AuditUtilities.SRCIP,
+                            USER_ID,
+                            INITIATIVE_ID,
+                            IBAN,
+                            REQUEST_ID
+                    ),
+            memoryAppender.getLoggedEvents().get(0).getFormattedMessage()
+    );
   }
 
   @Test
   void logCheckiban_ko(){
-    auditUtilities.logCheckIbanKO(USER_ID,INITIATIVE_ID,IBAN);
-    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+    auditUtilities.logCheckIbanKO(USER_ID,INITIATIVE_ID,IBAN, REQUEST_ID);
+    checkCommonFields();
+
+    Assertions.assertEquals(
+            ("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s msg=Checkiban's answer was KO suser=%s " +
+                    "cs1Label=initiativeId cs1=%s cs2Label=iban cs2=%s cs3Label=checkIbanRequestId cs3=%s")
+                    .formatted(
+                            AuditUtilities.SRCIP,
+                            USER_ID,
+                            INITIATIVE_ID,
+                            IBAN,
+                            REQUEST_ID
+                    ),
+            memoryAppender.getLoggedEvents().get(0).getFormattedMessage()
+    );
   }
   @Test
-  void logSavingIban_ko(){
+  void logEnrollIban(){
     auditUtilities.logEnrollIban(USER_ID,INITIATIVE_ID,IBAN);
-    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+    checkCommonFields();
+
+    Assertions.assertEquals(
+            ("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s msg=New IBAN enrolled from IO suser=%s " +
+                    "cs1Label=initiativeId cs1=%s cs2Label=iban cs2=%s")
+                    .formatted(
+                            AuditUtilities.SRCIP,
+                            USER_ID,
+                            INITIATIVE_ID,
+                            IBAN
+                    ),
+            memoryAppender.getLoggedEvents().get(0).getFormattedMessage()
+    );
   }
   @Test
-  void logSavingIbanFromIssuer_ko(){
+  void logEnrollIbanFromIssuer(){
     auditUtilities.logEnrollIbanFromIssuer(USER_ID,INITIATIVE_ID,IBAN);
-    assertThat(memoryAppender.contains(ch.qos.logback.classic.Level.DEBUG,MSG)).isFalse();
+    checkCommonFields();
+
+    Assertions.assertEquals(
+            ("CEF:0|PagoPa|IDPAY|1.0|7|User interaction|2| event=Iban dstip=%s msg=New IBAN enrolled from Issuer suser=%s " +
+                    "cs1Label=initiativeId cs1=%s cs2Label=iban cs2=%s")
+                    .formatted(
+                            AuditUtilities.SRCIP,
+                            USER_ID,
+                            INITIATIVE_ID,
+                            IBAN
+                    ),
+            memoryAppender.getLoggedEvents().get(0).getFormattedMessage()
+    );
   }
-
-  public static class MemoryAppender extends ListAppender<ILoggingEvent> {
-    public void reset() {
-      this.list.clear();
-    }
-
-    public boolean contains(ch.qos.logback.classic.Level level, String string) {
-      return this.list.stream()
-          .anyMatch(event -> event.toString().contains(string)
-              && event.getLevel().equals(level));
-    }
-
-    public int countEventsForLogger(String loggerName) {
-      return (int) this.list.stream()
-          .filter(event -> event.getLoggerName().contains(loggerName))
-          .count();
-    }
-
-    public List<ILoggingEvent> search() {
-      return this.list.stream()
-          .filter(event -> event.toString().contains(MSG))
-          .collect(Collectors.toList());
-    }
-
-    public List<ILoggingEvent> search(Level level) {
-      return this.list.stream()
-          .filter(event -> event.toString().contains(MSG)
-              && event.getLevel().equals(level))
-          .collect(Collectors.toList());
-    }
-
-    public int getSize() {
-      return this.list.size();
-    }
-
-    public List<ILoggingEvent> getLoggedEvents() {
-      return Collections.unmodifiableList(this.list);
-    }
-  }
-
 }
