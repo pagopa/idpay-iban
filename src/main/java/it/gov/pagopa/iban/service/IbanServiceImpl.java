@@ -24,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -122,7 +124,7 @@ public class IbanServiceImpl implements IbanService {
       log.info(
           "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
       ResponseEntity<ResponseCheckIbanDTO> responseCheckIban = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
-      String checkIbanRequestId = String.valueOf(responseCheckIban.getHeaders().get("x-request-id"));
+      String checkIbanRequestId = Objects.requireNonNull(responseCheckIban.getHeaders().get("x-request-id")).get(0);
       checkIbanDTO = responseCheckIban.getBody();
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
@@ -155,7 +157,7 @@ public class IbanServiceImpl implements IbanService {
       }
       if (e.status() == 501 || e.status() == 502) {
         log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
-        String checkIbanRequestId = String.valueOf(e.responseHeaders().get("x-request-id"));
+        String checkIbanRequestId = String.valueOf(e.responseHeaders().get("x-request-id").stream().toList().get(0));
         this.saveUnknown(iban, errorCode, errorDescription, checkIbanRequestId);
         auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
         return;
