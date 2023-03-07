@@ -184,7 +184,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode=TRNFNC96R02H501I",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_3}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -198,7 +198,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "TRNFNC96R02H501I"
+											"value": "{{CF_3}}"
 										}
 									]
 								}
@@ -314,7 +314,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_GAM}}",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -328,7 +328,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{CF_GAM}}"
+											"value": "{{CF_2}}"
 										}
 									]
 								}
@@ -444,7 +444,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode=GMMMRA79L13H703E",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -458,7 +458,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "GMMMRA79L13H703E"
+											"value": "{{CF_2}}"
 										}
 									]
 								}
@@ -507,14 +507,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{baseUrl}}/idpay/iban/IT81N0305801604100572105630",
+									"raw": "{{baseUrl}}/idpay/iban/{{IBAN_2}}",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"idpay",
 										"iban",
-										"IT81N0305801604100572105630"
+										"{{IBAN_2}}"
 									]
 								}
 							},
@@ -706,7 +706,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_GAM}}",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -720,7 +720,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{CF_GAM}}"
+											"value": "{{CF_2}}"
 										}
 									]
 								}
@@ -741,7 +741,7 @@
 											"pm.test(\"Iban status test\", function () {\r",
 											"     let jsonResponse = pm.response.json()\r",
 											"     const foundIban = jsonResponse.ibanList.some((item) =>{\r",
-											"         return item.iban === \"IT43O0326822300052755845000\"\r",
+											"         return item.iban === pm.environment.get(\"IBAN_3\")\r",
 											"     });\r",
 											"    pm.expect(foundIban).equals(false); \r",
 											"});\r",
@@ -819,14 +819,6 @@
 		{
 			"key": "tokenIO",
 			"value": ""
-		},
-		{
-			"key": "CF_GAM",
-			"value": "GMMMRA79L13H703E"
-		},
-		{
-			"key": "CF-TRI",
-			"value": "TRNFNC96R02H501I"
 		},
 		{
 			"key": "Iban-fake",
