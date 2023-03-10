@@ -128,11 +128,11 @@ public class IbanServiceImpl implements IbanService {
       checkIbanDTO = responseCheckIban.getBody();
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK");
         this.saveOk(iban, checkIbanDTO, checkIbanRequestId);
         auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
       } else {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO");
         auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban(), checkIbanRequestId);
         sendIbanToWallet(iban, IbanConstants.KO);
       }
@@ -156,7 +156,7 @@ public class IbanServiceImpl implements IbanService {
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban UNKNOWN_PSP");
         String checkIbanRequestId = String.valueOf(e.responseHeaders().get("x-request-id").stream().toList().get(0));
         this.saveUnknown(iban, errorCode, errorDescription, checkIbanRequestId);
         auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
