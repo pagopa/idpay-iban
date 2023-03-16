@@ -3,7 +3,7 @@
 		"_postman_id": "4d8dd0ba-f7e7-410c-a206-ad09458804e4",
 		"name": "Iban - e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26036736"
+		"_exporter_id": "26036679"
 	},
 	"item": [
 		{
@@ -87,6 +87,9 @@
 										"exec": [
 											"pm.test(\"Status test\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Empty list test\", function () {\r",
 											"     let jsonResponse = pm.response.json()\r",
 											"    pm.expect(jsonResponse.ibanList.length).equals(0);\r",
 											"});\r",
@@ -140,70 +143,1137 @@
 					"name": "Iban List - status OK",
 					"item": [
 						{
-							"name": "Generate Token IO",
-							"event": [
+							"name": "Create initiative",
+							"item": [
 								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test('Retrieve Token', () => {\r",
-											"    //verify response HTTP status \r",
-											"    pm.response.to.have.status(200);\r",
-											"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Ocp-Apim-Subscription-Key",
-										"value": "",
-										"type": "default"
-									},
-									{
-										"key": "Ocp-Apim-Trace",
-										"value": "true",
-										"type": "default"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_3}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"bpd",
-										"pagopa",
-										"api",
-										"v1",
-										"login"
-									],
-									"query": [
+									"name": "ENTE - Initiative creation",
+									"item": [
 										{
-											"key": "fiscalCode",
-											"value": "{{CF_3}}"
+											"name": "Generate Portal Token",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"let textResponse = pm.response.text()\r",
+															"\r",
+															"pm.test('Retrieve Token', () => {\r",
+															"    //verify response HTTP status \r",
+															"    pm.response.to.have.status(200);\r",
+															"    pm.collectionVariables.set(\"identityPortalToken\", textResponse);\r",
+															"});\r",
+															""
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "noauth"
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Ocp-Apim-Trace",
+														"value": "true",
+														"type": "default"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"aud\": \"idpay.welfare.pagopa.it\",\r\n  \"uid\": \"b8986bf2-1f93-4827-ab16-b21eb8aeae2b\",\r\n  \"name\": \"Test\",\r\n  \"familyName\": \"IDPay\",\r\n  \"email\": \"test@test.com\",\r\n  \"orgId\": \"2f63a151-da4e-4e1e-acf9-adecc0c4d727\",\r\n  \"orgVAT\": \"00608720272\",\r\n  \"orgName\": \"Ente di test IdPay\",\r\n  \"orgPartyRole\": \"ADMIN\",\r\n  \"orgRole\": \"admin\"\r\n}\r\n",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlToken}}/welfare/token/test",
+													"host": [
+														"{{baseUrlToken}}"
+													],
+													"path": [
+														"welfare",
+														"token",
+														"test"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "STEP1-Insert Initiative (Service Info)",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"//pm.collectionVariables.set('serviceId', pm.variables.replaceIn('{{$randomUUID}}'));\r",
+															"let moment = require('moment');\r",
+															"const now = String(moment().format('DD-MM-YYYY hh:mm'));\r",
+															"const serviceName = 'Test funzionali App IO enroll iban criteri automatici ' + now;\r",
+															"pm.collectionVariables.set('serviceName', serviceName);\r",
+															"pm.collectionVariables.set('description', pm.variables.replaceIn('{{$randomLoremSentence}}'));\r",
+															"\r",
+															"pm.collectionVariables.set('channel_type', 'web');\r",
+															"pm.collectionVariables.set('channel_contact', pm.variables.replaceIn('{{$randomUrl}}'));"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var jsonData = JSON.parse(responseBody);\r",
+															"// console.log('jsondata', jsonData);\r",
+															"// console.log('jsondata.initiativeId', jsonData.initiativeId);\r",
+															"pm.collectionVariables.set('initiativeId', jsonData.initiativeId);\r",
+															"\r",
+															"pm.test(\"Status test 201\", function () {\r",
+															"    pm.response.to.have.status(201);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Verify response body\", function () {\r",
+															"    let jsonResponse = pm.response.json();\r",
+															"    pm.expect(jsonResponse).have.property(\"initiativeId\");\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"serviceIO\": true,\n    \"serviceName\": \"{{serviceName}}\",\n    \"serviceScope\": \"LOCAL\",\n    \"description\": \"{{description}}\",\n    \"privacyLink\": \"https://www.google.it\",\n    \"tcLink\": \"https://www.google.com\",\n    \"channels\": [\n        {\n            \"type\": \"{{channel_type}}\",\n            \"contact\": \"{{channel_contact}}\"\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlInitiative}}/info",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														"info"
+													]
+												},
+												"description": "Save initiative and first subset of data 'general info'"
+											},
+											"response": []
+										},
+										{
+											"name": "STEP2-Update Initiative (general Info)",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"let moment = require('moment');\r",
+															"//Format: YYYY-MM-DD\r",
+															"let today = String(moment().format('YYYY-MM-DD'));\r",
+															"let todayP1 = String(moment().add(1,'months').format('YYYY-MM-DD'));\r",
+															"let todayP2 = String(moment().add(2,'months').format('YYYY-MM-DD'));\r",
+															"let todayP3 = String(moment().add(3,'months').format('YYYY-MM-DD'));\r",
+															"\r",
+															"/*\r",
+															"var futureDate = pm.variables.replaceIn('{{$$randomDateFuture}}');\r",
+															"pm.collectionVariables.set('...', _.random(0, 180));\r",
+															"*/\r",
+															"//_.floor(_.random(1.0, 100000.0, true),2)\r",
+															"pm.collectionVariables.set('budget', _.floor(_.random(10000, 100000, true),2));\r",
+															"pm.collectionVariables.set('beneficiaryType', 'PF');\r",
+															"//pm.collectionVariables.set('beneficiaryKnown', pm.variables.replaceIn('{{$randomBoolean}}'));\r",
+															"pm.collectionVariables.set('beneficiaryKnown', false);\r",
+															"pm.collectionVariables.set('rankingEnabled', false);\r",
+															"pm.collectionVariables.set('beneficiaryBudget', pm.variables.replaceIn('{{$randomInt}}'));//default max 1000\r",
+															"pm.collectionVariables.set('rankingStartDate', today);\r",
+															"pm.collectionVariables.set('rankingEndDate', todayP1);\r",
+															"pm.collectionVariables.set('startDate', todayP2);\r",
+															"pm.collectionVariables.set('endDate', todayP3);"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test 204\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"budget\": {{budget}},\n    \"beneficiaryType\": \"{{beneficiaryType}}\",\n    \"beneficiaryKnown\": {{beneficiaryKnown}},\n    \"rankingEnabled\": {{rankingEnabled}},\n    \"beneficiaryBudget\": {{beneficiaryBudget}},\n    \"rankingStartDate\": \"{{rankingStartDate}}\",\n    \"rankingEndDate\": \"{{rankingEndDate}}\",\n    \"startDate\": \"{{startDate}}\",\n    \"endDate\": \"{{endDate}}\",\n    \"descriptionMap\": {\n        \"it\": \"it\"\n    }\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlInitiative}}/:initiativeId/general",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														":initiativeId",
+														"general"
+													],
+													"variable": [
+														{
+															"key": "initiativeId",
+															"value": "{{initiativeId}}",
+															"description": "(Required) The initiative ID"
+														}
+													]
+												},
+												"description": "Save initiative and first subset of data 'general info'"
+											},
+											"response": []
+										},
+										{
+											"name": "STEP3-Update Initiative (criteria)",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test 204\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n    \"automatedCriteria\": [\r\n        {\r\n            \"authority\": \"INPS\",\r\n            \"code\": \"ISEE\",\r\n            \"operator\": \"GE\",\r\n            \"value\": \"1\",\r\n            \"value2\": \"\"\r\n        }\r\n    ],\r\n    \"selfDeclarationCriteria\":[]\r\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlInitiative}}/{{initiativeId}}/beneficiary",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														"{{initiativeId}}",
+														"beneficiary"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "STEP4-Update Initiative Trx-Reward rules",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test 204\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"const d = new Date();\r",
+															"dateString = d.toISOString()\r",
+															"let endTime = dateString.split('T');\r",
+															"endTime = endTime[1].split('Z');\r",
+															"\r",
+															"pm.collectionVariables.set('rewardRuleType', 'rewardValue');\r",
+															"const rewardValueTypes = [\"PERCENTAGE\", \"ABSOLUTE\"];\r",
+															"rewardValueTypeRandomIndex = _.random(0, rewardValueTypes.length - 1);\r",
+															"const selectedRewardValueType = rewardValueTypes[rewardValueTypeRandomIndex];\r",
+															"pm.collectionVariables.set('rewardValueType', selectedRewardValueType);\r",
+															"if (selectedRewardValueType == \"PERCENTAGE\") {\r",
+															"    pm.collectionVariables.set('rewardRuleValue', 100);\r",
+															"    pm.collectionVariables.set('trxThresholdFrom', 10);\r",
+															"} else {\r",
+															"    pm.collectionVariables.set('rewardRuleValue', 1);\r",
+															"    pm.collectionVariables.set('trxThresholdFrom', 1);\r",
+															"    \r",
+															"}\r",
+															"pm.collectionVariables.set('trxThresholdTo', 50);\r",
+															"\r",
+															"pm.collectionVariables.set('trxDaysOfWeek', pm.variables.replaceIn('{{$randomWeekday}}').toString().toUpperCase());\r",
+															"pm.collectionVariables.set('trxDayEndTime', endTime[0]);\r",
+															"pm.collectionVariables.set('trxCountFrom', 3);\r",
+															"pm.collectionVariables.set('trxCountTo', 11);\r",
+															"pm.collectionVariables.set('trxRewardLimitFrequency', 'DAILY');\r",
+															"pm.collectionVariables.set('trxRewardLimitValue', 3);"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"rewardRule\": {\n    \"_type\": \"{{rewardRuleType}}\",\n    \"rewardValue\": {{rewardRuleValue}},\n    \"rewardValueType\": \"{{rewardValueType}}\"\n  },\n  \"trxRule\": {\n    \"daysOfWeek\": [\n      {\n        \"daysOfWeek\": [\n          \"{{trxDaysOfWeek}}\"\n        ],\n        \"intervals\": [\n          {\n            \"startTime\": \"00:00:00.000\",\n            \"endTime\": \"{{trxDayEndTime}}\"\n          }\n        ]\n      }\n    ],\n    \"threshold\": {\n      \"from\": {{trxThresholdFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxThresholdTo}},\n      \"toIncluded\": true\n    },\n    \"mccFilter\": {\n      \"allowedList\": true,\n      \"values\": [\n        \"0742\", \"0743\", \"0744\"\n      ]\n    },\n    \"trxCount\": {\n      \"from\": {{trxCountFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxCountTo}},\n      \"toIncluded\": true\n    }\n  }\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlInitiative}}/:initiativeId/reward",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														":initiativeId",
+														"reward"
+													],
+													"variable": [
+														{
+															"key": "initiativeId",
+															"value": "{{initiativeId}}",
+															"description": "(Required) The initiative ID"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "STEP5-Update Initiative Refund Rule",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test 204\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"/*const timeType = [\"CLOSED\",\"DAILY\",\"WEEKLY\",\"MONTHLY\",\"QUARTERLY\"];\r",
+															"timeTypeRandomIndex = _.random(0, timeType.length-1);\r",
+															"\r",
+															"const accumulatedType = [\"BUDGET_EXHAUSTED\",\"THRESHOLD_REACHED\"];\r",
+															"accumulatedTypeRandomIndex = _.random(0, timeType.length-1);\r",
+															"\r",
+															"pm.collectionVariables.set('timeType', timeType[timeTypeRandomIndex]);\r",
+															"pm.collectionVariables.set('accumulatedType', accumulatedType[accumulatedTypeRandomIndex]);\r",
+															"pm.collectionVariables.set('identificationCode', pm.variables.replaceIn('{{$randomLoremSentence}}'));\r",
+															"*/\r",
+															"\r",
+															"\r",
+															"let refundType = [\"timeParameter\", \"accumulatedAmount\"];\r",
+															"refundTypeRandomIndex = _.random(0, refundType.length - 1);\r",
+															"\r",
+															"const refundTypeSelected = refundType[refundTypeRandomIndex];\r",
+															"let body = {};\r",
+															"if (refundTypeSelected == \"timeParameter\") {\r",
+															"    const timeType = [\"CLOSED\",\"DAILY\",\"WEEKLY\",\"MONTHLY\",\"QUARTERLY\"];\r",
+															"    timeTypeRandomIndex = _.random(0, timeType.length-1);\r",
+															"    body = {\r",
+															"        timeParameter: {\r",
+															"            timeType: timeType[timeTypeRandomIndex]\r",
+															"        }\r",
+															"    };\r",
+															"} else {\r",
+															"    const accumulatedType = [\"BUDGET_EXHAUSTED\", \"THRESHOLD_REACHED\"];\r",
+															"    accumulatedTypeRandomIndex = _.random(0, accumulatedType.length - 1);\r",
+															"    const accumulatedTypeSelected = accumulatedType[accumulatedTypeRandomIndex];\r",
+															"    if (accumulatedTypeSelected == \"BUDGET_EXHAUSTED\") {\r",
+															"        body = {\r",
+															"            accumulatedAmount: {\r",
+															"                accumulatedType: \"BUDGET_EXHAUSTED\"\r",
+															"            }\r",
+															"        };\r",
+															"    } else {\r",
+															"        body = {\r",
+															"            accumulatedAmount: {\r",
+															"                accumulatedType: \"THRESHOLD_REACHED\",\r",
+															"                refundThreshold: 10\r",
+															"            }\r",
+															"        };\r",
+															"    }\r",
+															"}\r",
+															"\r",
+															"pm.collectionVariables.set('body', JSON.stringify(body));"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{{body}}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlInitiative}}/:initiativeId/refund",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														":initiativeId",
+														"refund"
+													],
+													"variable": [
+														{
+															"key": "initiativeId",
+															"value": "{{initiativeId}}",
+															"description": "(Required) The initiative ID"
+														}
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "PAGOPA - Initiative update status APPROVED",
+									"item": [
+										{
+											"name": "Generate Portal Token",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"let textResponse = pm.response.text()\r",
+															"\r",
+															"pm.test('Retrieve Token', () => {\r",
+															"    //verify response HTTP status \r",
+															"    pm.response.to.have.status(200);\r",
+															"    pm.collectionVariables.set(\"identityPortalTokenPagopa\", textResponse);\r",
+															"});\r",
+															"\r",
+															"//response time is less than 1s\r",
+															"tests[\"Response time is less than 1s\"] = responseTime < 1000;"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "noauth"
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Ocp-Apim-Trace",
+														"value": "true",
+														"type": "default"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"aud\": \"idpay.welfare.pagopa.it\",\r\n  \"uid\": \"b8986bf2-1f93-4827-ab16-b21eb8aeae2b\",\r\n  \"name\": \"Test\",\r\n  \"familyName\": \"IDPay\",\r\n  \"email\": \"test@test.com\",\r\n  \"orgId\": \"2f63a151-da4e-4e1e-acf9-adecc0c4d727\",\r\n  \"orgVAT\": \"00608720272\",\r\n  \"orgName\": \"Ente di test IdPay\",\r\n  \"orgPartyRole\": \"ADMIN\",\r\n  \"orgRole\": \"pagopa_admin\"\r\n}\r\n",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlToken}}/welfare/token/test",
+													"host": [
+														"{{baseUrlToken}}"
+													],
+													"path": [
+														"welfare",
+														"token",
+														"test"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Update initiative into APPROVED status",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test 204\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"//setTimeout(function(){}, 20000); //milliseconds"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalTokenPagopa}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrlInitiative}}/{{initiativeId}}/approved",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														"{{initiativeId}}",
+														"approved"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "ENTE - Initiative PUBLISHED",
+									"item": [
+										{
+											"name": "Generate Portal Token Copy",
+											"event": [
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															""
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"let textResponse = pm.response.text()\r",
+															"\r",
+															"pm.test('Retrieve Token', () => {\r",
+															"    //verify response HTTP status \r",
+															"    pm.response.to.have.status(200);\r",
+															"    pm.collectionVariables.set(\"identityPortalToken\", textResponse);\r",
+															"});\r",
+															"\r",
+															"//response time is less than 1s\r",
+															"tests[\"Response time is less than 1s\"] = responseTime < 1000;"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "noauth"
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Ocp-Apim-Trace",
+														"value": "true",
+														"type": "default"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\r\n  \"aud\": \"idpay.welfare.pagopa.it\",\r\n  \"uid\": \"b8986bf2-1f93-4827-ab16-b21eb8aeae2b\",\r\n  \"name\": \"Test\",\r\n  \"familyName\": \"IDPay\",\r\n  \"email\": \"test@test.com\",\r\n  \"orgId\": \"2f63a151-da4e-4e1e-acf9-adecc0c4d727\",\r\n  \"orgVAT\": \"00608720272\",\r\n  \"orgName\": \"Ente di test IdPay\",\r\n  \"orgPartyRole\": \"ADMIN\",\r\n  \"orgRole\": \"admin\"\r\n}\r\n",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrlToken}}/welfare/token/test",
+													"host": [
+														"{{baseUrlToken}}"
+													],
+													"path": [
+														"welfare",
+														"token",
+														"test"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "Initiative PUBLISHED",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status test\", function () {\r",
+															"    pm.response.to.have.status(204);\r",
+															"});\r",
+															""
+														],
+														"type": "text/javascript"
+													}
+												},
+												{
+													"listen": "prerequest",
+													"script": {
+														"exec": [
+															"/*let body;\r",
+															"baseUrlInitiative = pm.variables.get('baseUrlInitiative')\r",
+															"if(baseUrlInitiative.includes('localhost')){\r",
+															"    body = {\r",
+															"        mode: 'raw',\r",
+															"        raw: JSON.stringify({\r",
+															"            organizationName: 'Comune di Milano',\r",
+															"            organizationFiscalCode: '11122233344',\r",
+															"            organizationUserId: 'b8986bf2-1f93-4827-ab16-b21eb8aeae2b',\r",
+															"            organizationUserRole: 'admin'\r",
+															"        })\r",
+															"    }\r",
+															"    pm.request.headers.add({\r",
+															"        key: \"Content-Type\",\r",
+															"        value: \"application/json\"\r",
+															"    });\r",
+															"    pm.variables.set('body', JSON.stringify(body));\r",
+															"    pm.request.body.update(body);\r",
+															"}\r",
+															"*/"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"protocolProfileBehavior": {
+												"disabledSystemHeaders": {}
+											},
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{identityPortalToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PUT",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrlInitiative}}/{{initiativeId}}/published",
+													"host": [
+														"{{baseUrlInitiative}}"
+													],
+													"path": [
+														"{{initiativeId}}",
+														"published"
+													]
+												}
+											},
+											"response": []
 										}
 									]
 								}
-							},
-							"response": []
+							]
+						},
+						{
+							"name": "Onboarding User",
+							"item": [
+								{
+									"name": "Generate Token IO",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Retrieve Token', () => {\r",
+													"    //verify response HTTP status \r",
+													"    pm.response.to.have.status(200);\r",
+													"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "",
+												"type": "default"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_3}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"bpd",
+												"pagopa",
+												"api",
+												"v1",
+												"login"
+											],
+											"query": [
+												{
+													"key": "fiscalCode",
+													"value": "{{CF_3}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Accept T&C",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Prerequisites Check",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/initiative",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"initiative"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "PDND + Autocertification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(202);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"setTimeout(() => {}, 10000);"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\",\r\n    \"pdndAccept\": true,\r\n    \"selfDeclarationList\": []\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/consent",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"consent"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Enroll Iban",
+							"item": [
+								{
+									"name": "Enroll Iban",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"setTimeout(() => {}, 15000)"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"iban\": \"{{IBAN_3}}\",\r\n    \"description\": \"conto cointestato\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/iban",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"iban"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						},
 						{
 							"name": "Get Iban List",
@@ -218,9 +1288,18 @@
 											"\r",
 											"pm.test(\"Iban status test\", function () {\r",
 											"    let responseJson = pm.response.json()\r",
-											"    pm.expect(responseJson.ibanList[0].checkIbanStatus).to.be.eql('OK');\r",
+											"    pm.expect(responseJson.ibanList[(responseJson.ibanList.length)-1].checkIbanStatus).to.be.eql('OK');\r",
 											"});\r",
 											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"setTimeout(() => {}, 20000)"
 										],
 										"type": "text/javascript"
 									}
@@ -270,70 +1349,327 @@
 					"name": "Iban List - status UNKNOWN",
 					"item": [
 						{
-							"name": "Generate Token IO",
-							"event": [
+							"name": "Onboarding User",
+							"item": [
 								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test('Retrieve Token', () => {\r",
-											"    //verify response HTTP status \r",
-											"    pm.response.to.have.status(200);\r",
-											"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Ocp-Apim-Subscription-Key",
-										"value": "",
-										"type": "default"
-									},
-									{
-										"key": "Ocp-Apim-Trace",
-										"value": "true",
-										"type": "default"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"bpd",
-										"pagopa",
-										"api",
-										"v1",
-										"login"
-									],
-									"query": [
+									"name": "Generate Token IO",
+									"event": [
 										{
-											"key": "fiscalCode",
-											"value": "{{CF_2}}"
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Retrieve Token', () => {\r",
+													"    //verify response HTTP status \r",
+													"    pm.response.to.have.status(200);\r",
+													"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
 										}
-									]
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "",
+												"type": "default"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"bpd",
+												"pagopa",
+												"api",
+												"v1",
+												"login"
+											],
+											"query": [
+												{
+													"key": "fiscalCode",
+													"value": "{{CF_2}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Accept T&C",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Prerequisites Check",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/initiative",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"initiative"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "PDND + Autocertification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(202);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\",\r\n    \"pdndAccept\": true,\r\n    \"selfDeclarationList\": []\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/consent",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"consent"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
+						},
+						{
+							"name": "Enroll Iban",
+							"item": [
+								{
+									"name": "Enroll Iban",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"setTimeout(() => {}, 10000)"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"iban\": \"{{IBAN_2}}\",\r\n    \"description\": \"conto cointestato\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/iban",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"iban"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						},
 						{
 							"name": "Get Iban List",
@@ -348,7 +1684,7 @@
 											"\r",
 											"pm.test(\"Iban status test\", function () {\r",
 											"    let responseJson = pm.response.json()\r",
-											"    pm.expect(responseJson.ibanList[0].checkIbanStatus).to.be.eql('UNKNOWN_PSP');\r",
+											"    pm.expect(responseJson.ibanList[(responseJson.ibanList.length)-1].checkIbanStatus).to.be.eql('UNKNOWN_PSP');\r",
 											"});\r",
 											""
 										],
@@ -389,132 +1725,6 @@
 									"path": [
 										"idpay",
 										"iban"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Iban Detail",
-					"item": [
-						{
-							"name": "Generate Token IO",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test('Retrieve Token', () => {\r",
-											"    //verify response HTTP status \r",
-											"    pm.response.to.have.status(200);\r",
-											"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Ocp-Apim-Subscription-Key",
-										"value": "",
-										"type": "default"
-									},
-									{
-										"key": "Ocp-Apim-Trace",
-										"value": "true",
-										"type": "default"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"bpd",
-										"pagopa",
-										"api",
-										"v1",
-										"login"
-									],
-									"query": [
-										{
-											"key": "fiscalCode",
-											"value": "{{CF_2}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get Iban List",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Status test\", function () {\r",
-											"    pm.response.to.have.status(200);\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{tokenIO}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/idpay/iban/{{IBAN_2}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"idpay",
-										"iban",
-										"{{IBAN_2}}"
 									]
 								}
 							},
@@ -662,70 +1872,327 @@
 					"name": "Iban List - KO",
 					"item": [
 						{
-							"name": "Generate Token IO",
-							"event": [
+							"name": "Onboarding User",
+							"item": [
 								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test('Retrieve Token', () => {\r",
-											"    //verify response HTTP status \r",
-											"    pm.response.to.have.status(200);\r",
-											"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
-											"});\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Ocp-Apim-Subscription-Key",
-										"value": "",
-										"type": "default"
-									},
-									{
-										"key": "Ocp-Apim-Trace",
-										"value": "true",
-										"type": "default"
-									}
-								],
-								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_2}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"bpd",
-										"pagopa",
-										"api",
-										"v1",
-										"login"
-									],
-									"query": [
+									"name": "Generate Token IO",
+									"event": [
 										{
-											"key": "fiscalCode",
-											"value": "{{CF_2}}"
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test('Retrieve Token', () => {\r",
+													"    //verify response HTTP status \r",
+													"    pm.response.to.have.status(200);\r",
+													"    pm.collectionVariables.set(\"tokenIO\", pm.response.text());\r",
+													"});\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
 										}
-									]
+									],
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "",
+												"type": "default"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "default"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_1}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"bpd",
+												"pagopa",
+												"api",
+												"v1",
+												"login"
+											],
+											"query": [
+												{
+													"key": "fiscalCode",
+													"value": "{{CF_1}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Accept T&C",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(204);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Prerequisites Check",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/initiative",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"initiative"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "PDND + Autocertification",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(202);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"initiativeId\" : \"{{initiativeId}}\",\r\n    \"pdndAccept\": true,\r\n    \"selfDeclarationList\": []\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/consent",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"consent"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
+						},
+						{
+							"name": "Enroll Iban",
+							"item": [
+								{
+									"name": "Enroll Iban",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status test\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"setTimeout(() => {}, 10000)"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Ocp-Apim-Subscription-Key",
+												"value": "{{apimSubscriptionKey}}",
+												"type": "text"
+											},
+											{
+												"key": "Ocp-Apim-Trace",
+												"value": "true",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"iban\": \"{{IBAN_3}}\",\r\n    \"description\": \"conto cointestato\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/iban",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"iban"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						},
 						{
 							"name": "Get Iban List",
@@ -745,7 +2212,6 @@
 											"     });\r",
 											"    pm.expect(foundIban).equals(false); \r",
 											"});\r",
-											"  \r",
 											""
 										],
 										"type": "text/javascript"
@@ -823,6 +2289,118 @@
 		{
 			"key": "Iban-fake",
 			"value": "43A0305801604100572053871"
+		},
+		{
+			"key": "initiativeId",
+			"value": ""
+		},
+		{
+			"key": "identityPortalToken",
+			"value": ""
+		},
+		{
+			"key": "serviceName",
+			"value": ""
+		},
+		{
+			"key": "description",
+			"value": ""
+		},
+		{
+			"key": "channel_type",
+			"value": ""
+		},
+		{
+			"key": "channel_contact",
+			"value": ""
+		},
+		{
+			"key": "budget",
+			"value": ""
+		},
+		{
+			"key": "beneficiaryType",
+			"value": ""
+		},
+		{
+			"key": "beneficiaryKnown",
+			"value": ""
+		},
+		{
+			"key": "rankingEnabled",
+			"value": ""
+		},
+		{
+			"key": "beneficiaryBudget",
+			"value": ""
+		},
+		{
+			"key": "rankingStartDate",
+			"value": ""
+		},
+		{
+			"key": "rankingEndDate",
+			"value": ""
+		},
+		{
+			"key": "startDate",
+			"value": ""
+		},
+		{
+			"key": "endDate",
+			"value": ""
+		},
+		{
+			"key": "rewardRuleType",
+			"value": ""
+		},
+		{
+			"key": "rewardValueType",
+			"value": ""
+		},
+		{
+			"key": "rewardRuleValue",
+			"value": ""
+		},
+		{
+			"key": "trxThresholdFrom",
+			"value": ""
+		},
+		{
+			"key": "trxThresholdTo",
+			"value": ""
+		},
+		{
+			"key": "trxDaysOfWeek",
+			"value": ""
+		},
+		{
+			"key": "trxDayEndTime",
+			"value": ""
+		},
+		{
+			"key": "trxCountFrom",
+			"value": ""
+		},
+		{
+			"key": "trxCountTo",
+			"value": ""
+		},
+		{
+			"key": "trxRewardLimitFrequency",
+			"value": ""
+		},
+		{
+			"key": "trxRewardLimitValue",
+			"value": ""
+		},
+		{
+			"key": "body",
+			"value": ""
+		},
+		{
+			"key": "identityPortalTokenPagopa",
+			"value": ""
 		}
 	]
 }
