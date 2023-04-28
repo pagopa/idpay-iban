@@ -3,7 +3,8 @@
 		"_postman_id": "4d8dd0ba-f7e7-410c-a206-ad09458804e4",
 		"name": "Iban - e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26036679"
+		"_exporter_id": "26036679",
+		"_collection_link": "https://idpay-test-funzionali.postman.co/workspace/IDPay-Test-Funzionali~d5f80577-ab5d-4d50-87c4-a81b6bcba6bc/collection/26036679-4d8dd0ba-f7e7-410c-a206-ad09458804e4?action=share&creator=26036679&source=collection_link"
 	},
 	"item": [
 		{
@@ -425,7 +426,7 @@
 												"header": [],
 												"body": {
 													"mode": "raw",
-													"raw": "{\r\n    \"automatedCriteria\": [\r\n        {\r\n            \"authority\": \"INPS\",\r\n            \"code\": \"ISEE\",\r\n            \"operator\": \"GE\",\r\n            \"value\": \"1\",\r\n            \"value2\": \"\"\r\n        }\r\n    ],\r\n    \"selfDeclarationCriteria\":[]\r\n}",
+													"raw": "{\r\n    \"automatedCriteria\": [\r\n        {\r\n            \"authority\": \"INPS\",\r\n            \"code\": \"ISEE\",\r\n            \"operator\": \"GE\",\r\n            \"value\": \"1\",\r\n            \"value2\": \"\",\r\n            \"iseeTypes\": [\r\n                \"ORDINARIO\",\r\n                \"MINORENNE\",\r\n                \"UNIVERSITARIO\",\r\n                \"SOCIOSANITARIO\",\r\n                \"DOTTORATO\",\r\n                \"RESIDENZIALE\",\r\n                \"CORRENTE\"\r\n            ]\r\n        }\r\n    ],\r\n    \"selfDeclarationCriteria\": []\r\n}",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -518,7 +519,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"rewardRule\": {\n    \"_type\": \"{{rewardRuleType}}\",\n    \"rewardValue\": {{rewardRuleValue}},\n    \"rewardValueType\": \"{{rewardValueType}}\"\n  },\n  \"trxRule\": {\n    \"daysOfWeek\": [\n      {\n        \"daysOfWeek\": [\n          \"{{trxDaysOfWeek}}\"\n        ],\n        \"intervals\": [\n          {\n            \"startTime\": \"00:00:00.000\",\n            \"endTime\": \"{{trxDayEndTime}}\"\n          }\n        ]\n      }\n    ],\n    \"threshold\": {\n      \"from\": {{trxThresholdFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxThresholdTo}},\n      \"toIncluded\": true\n    },\n    \"mccFilter\": {\n      \"allowedList\": true,\n      \"values\": [\n        \"0742\", \"0743\", \"0744\"\n      ]\n    },\n    \"trxCount\": {\n      \"from\": {{trxCountFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxCountTo}},\n      \"toIncluded\": true\n    }\n  }\n}",
+													"raw": "{ \"initiativeRewardType\": \"REFUND\",\n  \"rewardRule\": {\n    \"_type\": \"{{rewardRuleType}}\",\n    \"rewardValue\": {{rewardRuleValue}},\n    \"rewardValueType\": \"{{rewardValueType}}\"\n  },\n  \"trxRule\": {\n    \"daysOfWeek\": [\n      {\n        \"daysOfWeek\": [\n          \"{{trxDaysOfWeek}}\"\n        ],\n        \"intervals\": [\n          {\n            \"startTime\": \"00:00:00.000\",\n            \"endTime\": \"{{trxDayEndTime}}\"\n          }\n        ]\n      }\n    ],\n    \"threshold\": {\n      \"from\": {{trxThresholdFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxThresholdTo}},\n      \"toIncluded\": true\n    },\n    \"mccFilter\": {\n      \"allowedList\": true,\n      \"values\": [\n        \"0742\", \"0743\", \"0744\"\n      ]\n    },\n    \"trxCount\": {\n      \"from\": {{trxCountFrom}},\n      \"fromIncluded\": true,\n      \"to\": {{trxCountTo}},\n      \"toIncluded\": true\n    }\n  }\n}",
 													"options": {
 														"raw": {
 															"language": "json"
