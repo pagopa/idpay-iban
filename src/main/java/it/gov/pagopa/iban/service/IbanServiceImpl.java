@@ -176,6 +176,7 @@ public class IbanServiceImpl implements IbanService {
             .initiativeId(iban.getInitiativeId())
             .status(status)
             .queueDate(LocalDateTime.now().toString())
+            .channel(iban.getChannel())
             .build();
     try {
       ibanProducer.sendIban(ibanQueueWalletDTO);
