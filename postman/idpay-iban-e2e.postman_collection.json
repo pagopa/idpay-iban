@@ -3,8 +3,8 @@
 		"_postman_id": "4d8dd0ba-f7e7-410c-a206-ad09458804e4",
 		"name": "Iban - e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26036679",
-		"_collection_link": "https://idpay-test-funzionali.postman.co/workspace/IDPay-Test-Funzionali~d5f80577-ab5d-4d50-87c4-a81b6bcba6bc/collection/26036679-4d8dd0ba-f7e7-410c-a206-ad09458804e4?action=share&creator=26036679&source=collection_link"
+		"_exporter_id": "26036736",
+		"_collection_link": "https://idpay-test-funzionali.postman.co/workspace/IDPay-Test-Funzionali~d5f80577-ab5d-4d50-87c4-a81b6bcba6bc/collection/26036679-4d8dd0ba-f7e7-410c-a206-ad09458804e4?action=share&creator=26036736&source=collection_link"
 	},
 	"item": [
 		{
@@ -58,7 +58,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{$randomPassword}}",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_fake}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -72,7 +72,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{$randomPassword}}"
+											"value": "{{CF_fake}}"
 										}
 									]
 								}
@@ -1786,7 +1786,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{$randomPassword}}",
+									"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_1}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1800,7 +1800,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{$randomPassword}}"
+											"value": "{{CF_1}}"
 										}
 									]
 								}
@@ -1920,7 +1920,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_1}}",
+											"raw": "{{baseUrl}}/bpd/pagopa/api/v1/login?fiscalCode={{CF_fake}}",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1934,7 +1934,7 @@
 											"query": [
 												{
 													"key": "fiscalCode",
-													"value": "{{CF_1}}"
+													"value": "{{CF_fake}}"
 												}
 											]
 										}
@@ -2402,6 +2402,11 @@
 		{
 			"key": "identityPortalTokenPagopa",
 			"value": ""
+		},
+		{
+			"key": "CF_fake",
+			"value": "TMOVNC75S46X000F",
+			"type": "string"
 		}
 	]
 }
