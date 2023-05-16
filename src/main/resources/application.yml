@@ -19,9 +19,14 @@ rest-client:
   decrypt:
     base-url: ${PDV_DECRYPT_BASE_URL:}
     cf: ${PDV_DECRYPT_SERVICE_CODE:pdv-ms-tokenizer}
+management.endpoints:
+  web:
+    exposure.include: info, health
 spring:
   application:
-    name: idpay-iban
+    name: "@project.artifactId@"
+    version: "@project.version@"
+  jmx.enabled: true
   cloud:
     stream:
       binders:
@@ -34,7 +39,9 @@ spring:
         kafka-wallet:
           environment.spring.cloud.stream.kafka.binder:
             brokers: ${KAFKA_BINDER_BROKER_ENDPOINT_LIST:}
-            configuration.sasl.jaas.config: ${KAFKA_WALLET_SASL_JAAS_CONFIG:}
+            configuration:
+              sasl.jaas.config: ${KAFKA_WALLET_SASL_JAAS_CONFIG:}
+              key.serializer: org.apache.kafka.common.serialization.StringSerializer
           type: kafka
         kafka-errors:
           environment.spring.cloud.stream.kafka.binder:

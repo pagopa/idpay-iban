@@ -8,6 +8,7 @@ import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.service.IbanService;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,8 @@ class IbanControllerTest {
   private static final String HOLDER_BANK_OK = "Unicredit";
   private static final String CHANNEL = "APP_IO";
   private static final String DESCRIPTION = "conto intestato";
-  private static final IbanDTO IBAN_DTO = new IbanDTO(IBAN, CHECK_IBAN_STATUS, HOLDER_BANK_OK,
-      CHANNEL, DESCRIPTION);
+  private static final IbanDTO IBAN_DTO = new IbanDTO(IBAN, CHECK_IBAN_STATUS,DESCRIPTION,CHANNEL, HOLDER_BANK_OK,
+          LocalDateTime.now());
 
 
   @Test
@@ -80,9 +81,8 @@ class IbanControllerTest {
 
   @Test
   void getIban_ok() throws Exception {
-    IbanDTO ibanDTO = new IbanDTO(IBAN, CHECK_IBAN_STATUS, HOLDER_BANK_OK, CHANNEL, DESCRIPTION);
     Mockito.when(ibanServiceMock.getIban(IBAN, USER_ID))
-        .thenReturn(ibanDTO);
+        .thenReturn(IBAN_DTO);
 
     mvc.perform(
             MockMvcRequestBuilders.get(BASE_URL + "/" + IBAN + "/" + USER_ID)

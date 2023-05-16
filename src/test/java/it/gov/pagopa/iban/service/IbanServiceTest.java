@@ -30,20 +30,22 @@ import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
+import it.gov.pagopa.iban.utils.AuditUtilities;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.util.MultiValueMap;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
 @ContextConfiguration(classes = IbanServiceImpl.class)
@@ -62,7 +64,8 @@ class IbanServiceTest {
   IbanProducer ibanProducer;
   @MockBean
   ErrorProducer errorProducer;
-
+  @MockBean
+  AuditUtilities auditUtilities;
   @MockBean
   ObjectMapper mapper;
 
@@ -72,7 +75,6 @@ class IbanServiceTest {
   private static final String IBAN_OK = "IT43O0326822300052755845000";
   private static final String IBAN_UNKNOWN = "IT43Y0344003212000000242300";
   private static final String IBAN_KO = "IT10M0200805024000103019250";
-  private static final String IBAN_WRONG = "it99C1234567890123456789012222";
   private static final String CHECK_IBAN_STATUS = "OK";
   private static final String CHECK_IBAN_STATUS_KO = "KO";
 
@@ -82,6 +84,8 @@ class IbanServiceTest {
   private static final String CHANNEL = "APP_IO";
   private static final String CHANNEL_ISSUER = "ISSUER";
   private static final String DESCRIPTION = "conto intestato";
+  private static final String REQUEST_ID = "TEST_REQUEST_ID";
+  private static final String X_REQUEST_ID = "x-request-id";
   private static final IbanModel IBAN_MODEL = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
       BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
   private static final IbanQueueDTO IBAN_QUEUE_DTO = new IbanQueueDTO(USER_ID, INITIATIVEID,
@@ -138,11 +142,15 @@ class IbanServiceTest {
   void save_iban_ok() {
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         PAYLOAD_DTO);
+    MultiValueMap<String, String> headers = new HttpHeaders();
+    headers.add(X_REQUEST_ID, REQUEST_ID);
+    ResponseEntity<ResponseCheckIbanDTO> responseWithHeader = new ResponseEntity<>(response, headers, HttpStatus.OK);
+
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO.getUserId()))
         .thenReturn(DECRYPTED_CF_DTO);
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_QUEUE_DTO.getIban(), DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(responseWithHeader);
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
       IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
@@ -191,11 +199,15 @@ class IbanServiceTest {
   void save_iban_ok_queue_error() {
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         PAYLOAD_DTO);
+    MultiValueMap<String, String> headers = new HttpHeaders();
+    headers.add(X_REQUEST_ID, REQUEST_ID);
+    ResponseEntity<ResponseCheckIbanDTO> responseWithHeader = new ResponseEntity<>(response, headers, HttpStatus.OK);
+
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO.getUserId()))
         .thenReturn(DECRYPTED_CF_DTO);
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_QUEUE_DTO.getIban(), DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(responseWithHeader);
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY.setUserId(IBAN_QUEUE_DTO.getUserId());
       IBAN_MODEL_EMPTY.setIban(IBAN_QUEUE_DTO.getIban());
@@ -261,8 +273,11 @@ class IbanServiceTest {
     Request request =
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-    Mockito.doThrow(new FeignException.NotImplemented("", request, new byte[0], null))
-        .when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(X_REQUEST_ID, Collections.singleton(REQUEST_ID));
+    FeignException.BadGateway ex = new FeignException.BadGateway("", request, new byte[0], headers);
+    Mockito.doThrow(ex).when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY_UNKNOWN.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
@@ -311,8 +326,11 @@ class IbanServiceTest {
     Request request =
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-    Mockito.doThrow(new FeignException.BadGateway("", request, new byte[0], null))
-        .when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(X_REQUEST_ID, Collections.singleton(REQUEST_ID));
+    FeignException.BadGateway ex = new FeignException.BadGateway("", request, new byte[0], headers);
+    Mockito.doThrow(ex).when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY_UNKNOWN.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
@@ -363,8 +381,11 @@ class IbanServiceTest {
     Request request =
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-    Mockito.doThrow(new FeignException.BadGateway("", request, new byte[0], null))
-        .when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(X_REQUEST_ID, Collections.singleton(REQUEST_ID));
+    FeignException.BadGateway ex = new FeignException.BadGateway("", request, new byte[0], headers);
+    Mockito.doThrow(ex).when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+
     Mockito.doAnswer(invocationOnMock -> {
       IBAN_MODEL_EMPTY_UNKNOWN.setUserId(IBAN_QUEUE_DTO_UNKNOWN.getUserId());
       IBAN_MODEL_EMPTY_UNKNOWN.setIban(IBAN_QUEUE_DTO_UNKNOWN.getIban());
@@ -403,13 +424,16 @@ class IbanServiceTest {
 
     ResponseCheckIbanDTO response = new ResponseCheckIbanDTO(CHECK_IBAN_STATUS, ERROR_LIST,
         payload);
+    MultiValueMap<String, String> headers = new HttpHeaders();
+    headers.add(X_REQUEST_ID, REQUEST_ID);
+    ResponseEntity<ResponseCheckIbanDTO> responseWithHeader = new ResponseEntity<>(response, headers, HttpStatus.OK);
 
     Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO_KO.getUserId()))
         .thenReturn(DECRYPTED_CF_DTO);
 
     Mockito.when(
             checkIbanRestConnector.checkIban(IBAN_KO, DECRYPTED_CF_DTO.getPii()))
-        .thenReturn(response);
+        .thenReturn(responseWithHeader);
     final IbanQueueWalletDTO ibanQueueWalletDTO = new IbanQueueWalletDTO();
     Mockito.doAnswer(invocationOnMock -> {
       ibanQueueWalletDTO.setUserId(IBAN_QUEUE_DTO_KO.getUserId());
@@ -438,8 +462,10 @@ class IbanServiceTest {
     Request request =
         Request.create(
             Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
-    Mockito.doThrow(new FeignException.BadRequest("", request, new byte[0], null))
-        .when(checkIbanRestConnector).checkIban(IBAN_WRONG, DECRYPTED_CF_DTO.getPii());
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(X_REQUEST_ID, Collections.singleton(REQUEST_ID));
+    FeignException.BadGateway ex = new FeignException.BadGateway("", request, new byte[0], headers);
+    Mockito.doThrow(ex).when(checkIbanRestConnector).checkIban(IBAN_KO, DECRYPTED_CF_DTO.getPii());
 
     try {
       ibanService.saveIban(IBAN_QUEUE_DTO_KO);
@@ -484,8 +510,11 @@ class IbanServiceTest {
 
   @Test
   void getIban_ok() {
+    IbanModel ibanModelOld = new IbanModel(USER_ID, IBAN_OK, CHECK_IBAN_STATUS,
+            BIC_CODE, HOLDER_BANK_OK, LocalDateTime.now());
+    ibanModelOld.setCheckIbanResponseDate(LocalDateTime.now().minusDays(2));
     Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
-        .thenReturn(Optional.of(IBAN_MODEL));
+        .thenReturn(new ArrayList<>(Arrays.asList(ibanModelOld, IBAN_MODEL)));
     IbanDTO ibanDTO = ibanService.getIban(IBAN_OK, USER_ID);
 
     assertEquals(ibanDTO.getIban(), IBAN_MODEL.getIban());
@@ -493,12 +522,13 @@ class IbanServiceTest {
     assertEquals(ibanDTO.getDescription(), IBAN_MODEL.getDescription());
     assertEquals(ibanDTO.getHolderBank(), IBAN_MODEL.getHolderBank());
     assertEquals(ibanDTO.getChannel(), IBAN_MODEL.getChannel());
+    assertEquals(ibanDTO.getCheckIbanResponseDate(), IBAN_MODEL.getCheckIbanResponseDate());
   }
 
   @Test
   void getIban_ko() {
     Mockito.when(ibanRepositoryMock.findByIbanAndUserId(IBAN_OK, USER_ID))
-        .thenReturn(Optional.empty());
+        .thenReturn(Collections.emptyList());
     try {
       ibanService.getIban(IBAN_OK, USER_ID);
       Assertions.fail();

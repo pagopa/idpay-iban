@@ -27,6 +27,7 @@ public class IbanModel {
     private String description;
     private LocalDateTime queueDate;
     private LocalDateTime checkIbanResponseDate;
+    private String checkIbanRequestId;
 
     public IbanModel(String userId, String iban, String checkIbanStatus, String bicCode, String holderBank, LocalDateTime queueDate) {
         this.userId = userId;

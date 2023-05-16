@@ -17,15 +17,20 @@ import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
+import it.gov.pagopa.iban.utils.AuditUtilities;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +46,8 @@ public class IbanServiceImpl implements IbanService {
 
   @Autowired IbanProducer ibanProducer;
   @Autowired ErrorProducer errorProducer;
+  @Autowired
+  AuditUtilities auditUtilities;
 
   @Value(
       "${spring.cloud.stream.binders.kafka-iban.environment.spring.cloud.stream.kafka.binder.brokers}")
@@ -66,21 +73,31 @@ public class IbanServiceImpl implements IbanService {
                 new IbanDTO(
                     iban.getIban(),
                     iban.getCheckIbanStatus(),
-                    iban.getHolderBank(),
+                    iban.getDescription(),
                     iban.getChannel(),
-                    iban.getDescription())));
+                    iban.getHolderBank(),
+                    iban.getCheckIbanResponseDate())));
     ibanList.setIbanList(ibanDTOList);
     return ibanList;
   }
 
   public void saveIban(IbanQueueDTO iban) {
+    long startTime = System.currentTimeMillis();
     if(IbanConstants.CHANNEL_IO.equals(iban.getChannel())){
       log.info("[SAVE_IBAN] New IBAN enrolled from IO: sending to CheckIban");
       checkIban(iban);
+      doFinally(startTime);
       return;
     }
     log.info("[SAVE_IBAN] New IBAN enrolled from issuer: saving");
     saveIbanFromIssuer(iban);
+    doFinally(startTime);
+  }
+
+  private void doFinally(long startTime){
+    log.info(
+        "[PERFORMANCE_LOG] [SAVE_IBAN] Time occurred to perform business logic: {} ms",
+        System.currentTimeMillis() - startTime);
   }
 
   private void saveIbanFromIssuer(IbanQueueDTO iban) {
@@ -91,6 +108,7 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setDescription(iban.getDescription());
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
     ibanRepository.save(ibanModel);
+    auditUtilities.logEnrollIbanFromIssuer(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.ISSUER_NO_CHECKIBAN);
   }
@@ -105,13 +123,17 @@ public class IbanServiceImpl implements IbanService {
       long time = Duration.between(start, finish).toMillis();
       log.info(
           "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
-      checkIbanDTO = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+      ResponseEntity<ResponseCheckIbanDTO> responseCheckIban = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+      String checkIbanRequestId = Objects.requireNonNull(responseCheckIban.getHeaders().get("x-request-id")).get(0);
+      checkIbanDTO = responseCheckIban.getBody();
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban OK");
-        this.saveOk(iban, checkIbanDTO);
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK");
+        this.saveOk(iban, checkIbanDTO, checkIbanRequestId);
+        auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
       } else {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban KO");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO");
+        auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban(), checkIbanRequestId);
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
@@ -134,8 +156,10 @@ public class IbanServiceImpl implements IbanService {
         errorDescription = e.contentUTF8();
       }
       if (e.status() == 501 || e.status() == 502) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN] CheckIban UNKNOWN_PSP");
-        this.saveUnknown(iban, errorCode, errorDescription);
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban UNKNOWN_PSP");
+        String checkIbanRequestId = String.valueOf(e.responseHeaders().get("x-request-id").stream().toList().get(0));
+        this.saveUnknown(iban, errorCode, errorDescription, checkIbanRequestId);
+        auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
         return;
       }
 
@@ -152,6 +176,7 @@ public class IbanServiceImpl implements IbanService {
             .initiativeId(iban.getInitiativeId())
             .status(status)
             .queueDate(LocalDateTime.now().toString())
+            .channel(iban.getChannel())
             .build();
     try {
       ibanProducer.sendIban(ibanQueueWalletDTO);
@@ -176,7 +201,7 @@ public class IbanServiceImpl implements IbanService {
     errorProducer.sendEvent(errorMessage.build());
   }
 
-  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO) {
+  private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO, String requestId) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -187,12 +212,14 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
     ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
     ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+    ibanModel.setCheckIbanRequestId(requestId);
     ibanRepository.save(ibanModel);
+    auditUtilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.OK);
   }
 
-  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription) {
+  private void saveUnknown(IbanQueueDTO iban, String errorCode, String errorDescription, String requestId) {
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -204,22 +231,28 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
     ibanModel.setErrorDescription(errorDescription);
     ibanModel.setCheckIbanStatus(IbanConstants.UNKNOWN_PSP);
+    ibanModel.setCheckIbanRequestId(requestId);
     ibanRepository.save(ibanModel);
+    auditUtilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
 
     this.sendIbanToWallet(iban, IbanConstants.UNKNOWN_PSP);
   }
 
   @Override
   public IbanDTO getIban(String iban, String userId) {
-    IbanModel ibanModel =
+    List<IbanModel> ibanModelList =
         ibanRepository
-            .findByIbanAndUserId(iban, userId)
-            .orElseThrow(() -> new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found."));
+            .findByIbanAndUserId(iban, userId);
+    if (ibanModelList.isEmpty()) {
+      throw new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found.");
+    }
+    ibanModelList.sort(Comparator.comparing(IbanModel::getCheckIbanResponseDate).reversed());
     return new IbanDTO(
-        ibanModel.getIban(),
-        ibanModel.getCheckIbanStatus(),
-        ibanModel.getHolderBank(),
-        ibanModel.getChannel(),
-        ibanModel.getDescription());
+            ibanModelList.get(0).getIban(),
+            ibanModelList.get(0).getCheckIbanStatus(),
+            ibanModelList.get(0).getDescription(),
+            ibanModelList.get(0).getChannel(),
+            ibanModelList.get(0).getHolderBank(),
+            ibanModelList.get(0).getCheckIbanResponseDate());
   }
 }
