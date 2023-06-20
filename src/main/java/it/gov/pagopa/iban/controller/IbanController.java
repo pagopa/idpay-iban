@@ -2,7 +2,7 @@ package it.gov.pagopa.iban.controller;
 
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
