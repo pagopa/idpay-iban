@@ -1,5 +1,7 @@
 api.key.decrypt: ${PDV_DECRYPT_API_KEY:}
+
 kafka.topic.checkiban: ${KAFKA_TOPIC_CHECKIBAN:}
+
 logging:
   level:
     it.gov.pagopa: ${LOG_LEVEL_PAGOPA:DEBUG}
@@ -9,6 +11,7 @@ logging:
         cloud: ${LOG_LEVEL_SPRING_CLOUD:WARN}
         data: ${LOG_LEVEL_SPRING_DATA:INFO}
     root: ${LOG_LEVEL_ROOT:INFO}
+
 rest-client:
   checkiban:
     apikey: ${CHECKIBAN_API_KEY:}
@@ -19,9 +22,11 @@ rest-client:
   decrypt:
     base-url: ${PDV_DECRYPT_BASE_URL:}
     cf: ${PDV_DECRYPT_SERVICE_CODE:pdv-ms-tokenizer}
+
 management.endpoints:
   web:
     exposure.include: info, health
+
 spring:
   application:
     name: "@project.artifactId@"
@@ -110,8 +115,8 @@ spring:
       on-profile: default
   data:
     mongodb:
-      database: ${MONGODB_DBNAME}
-      uri: ${MONGODB_URI}
+      uri: ${MONGODB_URI:mongodb://localhost:27017}
+      database: ${MONGODB_DBNAME:idpay}
       # custom configured properties
       config:
         connectionPool:
