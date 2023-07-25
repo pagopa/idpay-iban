@@ -70,7 +70,7 @@ microservice-chart:
       KAFKA_IBAN_SECURITY_PROTOCOL: kafka_security_protocol
       KAFKA_TOPIC_WALLET: idpay_checkiban_outcome_topic
       KAFKA_TOPIC_IBAN: idpay_checkiban_evaluation_topic
-      KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-evaluation-consumer-group
+      KAFKA_CHECKIBAN_CONSUMER_GROUP: idpay-checkiban-eval-consumer-group
     idpay-eventhub-01:
       KAFKA_BINDER_BROKER_ENDPOINT_ERRORS: kafka_broker
       KAFKA_TOPIC_ERRORS: idpay_error_topic

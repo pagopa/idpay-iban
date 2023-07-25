@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class IbanConsumer {
   @Bean
-  public Consumer<IbanQueueDTO> consumerIban(IbanService ibanService){
+  public Consumer<IbanQueueDTO> ibanQueue(IbanService ibanService){
     return ibanService::saveIban;
   }
 
 }
+
