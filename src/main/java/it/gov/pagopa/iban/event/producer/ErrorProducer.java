@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ErrorProducer {
 
-  @Value("${spring.cloud.stream.bindings.IbanQueue-out-1.binder}")
+  @Value("${spring.cloud.stream.bindings.ibanQueue-out-1.binder}")
   private String binderError;
   
   @Autowired
   StreamBridge streamBridge;
 
   public void sendEvent(Message<?> errorQueueDTO){
-    streamBridge.send("IbanQueue-out-1",binderError, errorQueueDTO);
+    streamBridge.send("ibanQueue-out-1",binderError, errorQueueDTO);
   }
 }

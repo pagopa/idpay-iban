@@ -53,14 +53,14 @@ public class IbanServiceImpl implements IbanService {
       "${spring.cloud.stream.binders.kafka-iban.environment.spring.cloud.stream.kafka.binder.brokers}")
   String ibanServer;
 
-  @Value("${spring.cloud.stream.bindings.IbanQueue-in-0.destination}")
+  @Value("${spring.cloud.stream.bindings.ibanQueue-in-0.destination}")
   String ibanTopic;
 
   @Value(
       "${spring.cloud.stream.binders.kafka-wallet.environment.spring.cloud.stream.kafka.binder.brokers}")
   String ibanWalletServer;
 
-  @Value("${spring.cloud.stream.bindings.IbanQueue-out-0.destination}")
+  @Value("${spring.cloud.stream.bindings.ibanQueue-out-0.destination}")
   String ibanWalletTopic;
 
   public IbanListDTO getIbanList(String userId) {
