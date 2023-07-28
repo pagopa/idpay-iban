@@ -34,7 +34,7 @@ spring:
   jmx.enabled: true
   cloud:
     function:
-      definition: IbanQueue
+      definition: ibanQueue
     stream:
       binders:
         kafka-iban:
@@ -56,16 +56,16 @@ spring:
             configuration.sasl.jaas.config: ${KAFKA_ERRORS_SASL_JAAS_CONFIG:}
           type: kafka
       bindings:
-        IbanQueue-in-0:
+        ibanQueue-in-0:
           binder: kafka-iban
           content-type: ${KAFKA_CONTENT_TYPE:application/json}
           destination: ${KAFKA_TOPIC_IBAN:}
           group: ${KAFKA_CHECKIBAN_CONSUMER_GROUP:}
-        IbanQueue-out-0:
+        ibanQueue-out-0:
           binder: kafka-wallet
           content-type: ${KAFKA_CONTENT_TYPE:application/json}
           destination: ${KAFKA_TOPIC_WALLET:}
-        IbanQueue-out-1:
+        ibanQueue-out-1:
           binder: kafka-errors
           content-type: ${KAFKA_CONTENT_TYPE:application/json}
           destination: ${KAFKA_TOPIC_ERRORS:}
@@ -81,7 +81,7 @@ spring:
             security.protocol: ${KAFKA_CONFIG_SECURITY_PROTOCOL:SASL_SSL}
             max.request.size: ${KAFKA_CONFIG_MAX_REQUEST_SIZE:1000000}
         bindings:
-          IbanQueue-in-0:
+          ibanQueue-in-0:
             consumer:
               startOffset: ${KAFKA_IBAN_REQUEST_START_OFFSET:${KAFKA_CONSUMER_CONFIG_START_OFFSET:earliest}}
               autoCommitOffset: ${KAFKA_IBAN_AUTO_COMMIT:${KAFKA_CONSUMER_CONFIG_AUTO_COMMIT:true}}
@@ -94,7 +94,7 @@ spring:
                 socket.connection.setup.timeout:
                   max.ms: ${KAFKA_IBAN_REQUEST_CONNECTION_TIMEOUT_MAX_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MAX_MS:200000}}
                   ms: ${KAFKA_IBAN_REQUEST_CONNECTION_TIMEOUT_MS:${KAFKA_CONSUMER_CONFIG_CONNECTION_TIMEOUT_MS:100000}}
-          IbanQueue-out-0:
+          ibanQueue-out-0:
             producer:
               configuration:
                 connections.max.idle.ms: ${KAFKA_IBAN_CONNECTION_MAX_IDLE_TIME:180000}
@@ -102,7 +102,7 @@ spring:
                 linger.ms: ${KAFKA_IBAN_LINGER_MS:${KAFKA_LINGER_MS:2}}
                 batch.size: ${KAFKA_IBAN_BATCH_SIZE:${KAFKA_BATCH_SIZE:16384}}
                 metadata.max.idle.ms: ${KAFKA_IBAN_METADATA_MAX_IDLE_MS:${KAFKA_METADATA_MAX_IDLE_MS:180000}}
-          IbanQueue-out-1:
+          ibanQueue-out-1:
             producer:
               configuration:
                 connections.max.idle.ms: ${KAFKA_ERRORS_CONNECTION_MAX_IDLE_TIME:180000}
