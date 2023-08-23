@@ -1,12 +1,15 @@
 package it.gov.pagopa.iban.exception;
 
-import lombok.AllArgsConstructor;
+import it.gov.pagopa.common.web.exception.ClientExceptionWithBody;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
-@AllArgsConstructor
 @Getter
-public class IbanException extends RuntimeException{
-  private final int code;
-  private final String message;
+@SuppressWarnings("squid:S110")
+public class IbanException extends ClientExceptionWithBody {
+
+  public IbanException(Integer code, String message) {
+    super(HttpStatus.valueOf(code), code, message, null);
+  }
 
 }
