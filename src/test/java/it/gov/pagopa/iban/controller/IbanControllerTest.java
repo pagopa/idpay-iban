@@ -3,7 +3,7 @@ package it.gov.pagopa.iban.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.gov.pagopa.iban.dto.ErrorDTO;
+import it.gov.pagopa.common.web.dto.ErrorDTO;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.exception.IbanException;
