@@ -202,6 +202,7 @@ public class IbanServiceImpl implements IbanService {
   }
 
   private void saveOk(IbanQueueDTO iban, ResponseCheckIbanDTO checkIbanDTO, String requestId) {
+
     IbanModel ibanModel = new IbanModel();
     ibanModel.setUserId(iban.getUserId());
     ibanModel.setIban(iban.getIban());
@@ -210,8 +211,10 @@ public class IbanServiceImpl implements IbanService {
     ibanModel.setQueueDate(LocalDateTime.parse(iban.getQueueDate()));
     ibanModel.setCheckIbanResponseDate(LocalDateTime.now());
     ibanModel.setCheckIbanStatus(checkIbanDTO.getPayload().getValidationStatus());
-    ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
-    ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+    if (checkIbanDTO.getPayload().getBankInfo() != null) {
+      ibanModel.setBicCode(checkIbanDTO.getPayload().getBankInfo().getBicCode());
+      ibanModel.setHolderBank(checkIbanDTO.getPayload().getBankInfo().getBusinessName());
+    }
     ibanModel.setCheckIbanRequestId(requestId);
     ibanRepository.save(ibanModel);
     auditUtilities.logEnrollIban(iban.getUserId(), iban.getInitiativeId(), iban.getIban());
