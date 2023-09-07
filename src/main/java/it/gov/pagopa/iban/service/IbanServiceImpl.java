@@ -18,14 +18,11 @@ import it.gov.pagopa.iban.exception.IbanException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import it.gov.pagopa.iban.utils.AuditUtilities;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,17 +83,18 @@ public class IbanServiceImpl implements IbanService {
     if(IbanConstants.CHANNEL_IO.equals(iban.getChannel())){
       log.info("[SAVE_IBAN] New IBAN {} enrolled from IO: sending to CheckIban", iban.getIban());
       checkIban(iban);
-      doFinally(startTime);
+      performanceLog(startTime, "SAVE_IBAN");
       return;
     }
     log.info("[SAVE_IBAN] New IBAN {} enrolled from issuer: saving", iban.getIban());
     saveIbanFromIssuer(iban);
-    doFinally(startTime);
+    performanceLog(startTime, "SAVE_IBAN");
   }
 
-  private void doFinally(long startTime){
+  private void performanceLog(long startTime, String flowName){
     log.info(
-        "[PERFORMANCE_LOG] [SAVE_IBAN] Time occurred to perform business logic: {} ms",
+        "[PERFORMANCE_LOG] [{}] Time occurred to perform business logic: {} ms",
+        flowName,
         System.currentTimeMillis() - startTime);
   }
 
@@ -116,28 +114,29 @@ public class IbanServiceImpl implements IbanService {
   private void checkIban(IbanQueueDTO iban){
     ResponseCheckIbanDTO checkIbanDTO;
     try {
-      Instant start = Instant.now();
-      log.debug("[SAVE_IBAN] [CHECK_IBAN] Calling decrypting service at: " + start);
+      long startTimeDecrypt = System.currentTimeMillis();
       DecryptedCfDTO decryptedCfDTO = decryptRestConnector.getPiiByToken(iban.getUserId());
-      Instant finish = Instant.now();
-      long time = Duration.between(start, finish).toMillis();
-      log.info(
-          "[SAVE_IBAN] [CHECK_IBAN] Decrypting finished at: " + finish + " The decrypting service took: " + time + "ms");
+      performanceLog(startTimeDecrypt, "SAVE_IBAN_DECRYPT");
+
+      long startTimeCheckIban = System.currentTimeMillis();
       ResponseEntity<ResponseCheckIbanDTO> responseCheckIban = checkIbanRestConnector.checkIban(iban.getIban(), decryptedCfDTO.getPii());
+      performanceLog(startTimeCheckIban, "SAVE_IBAN_CHECKIBAN");
+
       String checkIbanRequestId = Objects.requireNonNull(responseCheckIban.getHeaders().get("x-request-id")).get(0);
       checkIbanDTO = responseCheckIban.getBody();
+
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK, statusCode: {}", responseCheckIban.getStatusCode());
         this.saveOk(iban, checkIbanDTO, checkIbanRequestId);
         auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
       } else {
-        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO");
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO, statusCode: {}", responseCheckIban.getStatusCode());
         auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban(), checkIbanRequestId);
         sendIbanToWallet(iban, IbanConstants.KO);
       }
     } catch (FeignException e) {
-      log.info("[SAVE_IBAN] [CHECK_IBAN] Exception: " + e.getMessage());
+      log.info("[SAVE_IBAN] [CHECK_IBAN] Exception: {}, statusCode: {}", e.getMessage(), e.status());
       log.info(e.contentUTF8());
       String errorCode = null;
       String errorDescription = null;
