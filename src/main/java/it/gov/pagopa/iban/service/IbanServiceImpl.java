@@ -127,11 +127,11 @@ public class IbanServiceImpl implements IbanService {
 
       if (checkIbanDTO != null
           && checkIbanDTO.getPayload().getValidationStatus().equals(IbanConstants.OK)) {
-        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK, statusCode: {}", responseCheckIban.getStatusCode());
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban OK, statusCode: {}", responseCheckIban.getStatusCode().value());
         this.saveOk(iban, checkIbanDTO, checkIbanRequestId);
         auditUtilities.logCheckIbanOK(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
       } else {
-        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO, statusCode: {}", responseCheckIban.getStatusCode());
+        log.info("[SAVE_IBAN] [CHECK_IBAN_RESULT] CheckIban KO, statusCode: {}", responseCheckIban.getStatusCode().value());
         auditUtilities.logCheckIbanKO(iban.getUserId(),iban.getInitiativeId(),iban.getIban(), checkIbanRequestId);
         sendIbanToWallet(iban, IbanConstants.KO);
       }
