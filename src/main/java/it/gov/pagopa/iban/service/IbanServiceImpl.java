@@ -161,10 +161,12 @@ public class IbanServiceImpl implements IbanService {
         this.saveUnknown(iban, errorCode, errorDescription, checkIbanRequestId);
         auditUtilities.logCheckIbanUnknown(iban.getUserId(),iban.getInitiativeId(), iban.getIban(), checkIbanRequestId);
         return;
+      } else if (e.status() == 429) {
+        final MessageBuilder<?> errorMessage = MessageBuilder.withPayload(iban);
+        sendToQueueError(e, errorMessage, ibanServer, ibanTopic);
+        return;
       }
-
-      final MessageBuilder<?> errorMessage = MessageBuilder.withPayload(iban);
-      sendToQueueError(e, errorMessage, ibanServer, ibanTopic);
+      sendIbanToWallet(iban, IbanConstants.KO);
     }
   }
 
