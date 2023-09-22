@@ -369,6 +369,29 @@ class IbanServiceTest {
   }
 
   @Test
+  void save_iban_ko_429() {
+    ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
+            "PSP 03440 Not Present in Routing Subsystem", null);
+    ERROR_LIST.add(errorCheckIbanDTO);
+
+    Mockito.when(decryptRestConnector.getPiiByToken(IBAN_QUEUE_DTO_UNKNOWN.getUserId()))
+            .thenReturn(DECRYPTED_CF_UNKNOWN);
+
+    Request request =
+            Request.create(
+                    Request.HttpMethod.POST, "url", new HashMap<>(), null, new RequestTemplate());
+    Map<String, Collection<String>> headers = new HashMap<>();
+    headers.put(X_REQUEST_ID, Collections.singleton(REQUEST_ID));
+    FeignException.TooManyRequests ex = new FeignException.TooManyRequests("", request, new byte[0], headers);
+    Mockito.doThrow(ex).when(checkIbanRestConnector).checkIban(IBAN_UNKNOWN, DECRYPTED_CF_UNKNOWN.getPii());
+
+    ibanService.saveIban(IBAN_QUEUE_DTO_UNKNOWN);
+
+    Mockito.verify(errorProducer, Mockito.times(1)).sendEvent(Mockito.any());
+
+  }
+
+  @Test
   void save_iban_unknown_502() {
     ErrorCheckIbanDTO errorCheckIbanDTO = new ErrorCheckIbanDTO("PGPA-0017",
         "PSP 03440 Not Present in Routing Subsystem", null);
