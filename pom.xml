@@ -10,7 +10,7 @@
     </parent>
     <groupId>it.gov.pagopa.iban</groupId>
     <artifactId>idpay-iban</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <name>idpay-iban</name>
     <description>Iban Microservice</description>
     <properties>
