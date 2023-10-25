@@ -4,7 +4,7 @@
 		"name": "Iban - e2e",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "26036679",
-		"_collection_link": "https://idpay-test-funzionali.postman.co/workspace/IDPay-Test-Funzionali~d5f80577-ab5d-4d50-87c4-a81b6bcba6bc/collection/26036679-4d8dd0ba-f7e7-410c-a206-ad09458804e4?action=share&creator=26036679&source=collection_link"
+		"_collection_link": "https://idpay-test-funzionali.postman.co/workspace/IDPay-Test-Funzionali~d5f80577-ab5d-4d50-87c4-a81b6bcba6bc/collection/26036679-4d8dd0ba-f7e7-410c-a206-ad09458804e4?action=share&source=collection_link&creator=26036679"
 	},
 	"item": [
 		{
@@ -2250,6 +2250,38 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "Delete Initiative initiativeId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Payment - Unhappy Case - Delete Initiative - Status test 204\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{AKSAPIServerUrlGeneric}}idpayportalwelfarebackendinitiative/idpay/initiative/{{initiativeId}}",
+					"host": [
+						"{{AKSAPIServerUrlGeneric}}idpayportalwelfarebackendinitiative"
+					],
+					"path": [
+						"idpay",
+						"initiative",
+						"{{initiativeId}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
