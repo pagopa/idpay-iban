@@ -1,7 +1,6 @@
 package it.gov.pagopa.iban.event.producer;
 
 import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -16,7 +15,6 @@ public class IbanProducer {
 
     private final StreamBridge streamBridge;
 
-    @Autowired
     public IbanProducer(StreamBridge streamBridge) {
         this.streamBridge = streamBridge;
     }

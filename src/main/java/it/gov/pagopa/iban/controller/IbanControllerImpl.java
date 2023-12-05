@@ -4,7 +4,6 @@ import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
 import it.gov.pagopa.iban.service.IbanService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +14,6 @@ public class IbanControllerImpl implements IbanController {
 
     private final IbanService ibanService;
 
-    @Autowired
     public IbanControllerImpl(IbanService ibanService) {
         this.ibanService = ibanService;
     }

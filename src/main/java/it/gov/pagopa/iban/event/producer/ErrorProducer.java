@@ -1,6 +1,5 @@
 package it.gov.pagopa.iban.event.producer;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.Message;
@@ -14,7 +13,6 @@ public class ErrorProducer {
 
   private final StreamBridge streamBridge;
 
-  @Autowired
   public ErrorProducer(StreamBridge streamBridge) {
     this.streamBridge = streamBridge;
   }

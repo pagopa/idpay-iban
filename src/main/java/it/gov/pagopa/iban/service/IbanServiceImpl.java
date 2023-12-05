@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +62,6 @@ public class IbanServiceImpl implements IbanService {
   @Value("${spring.cloud.stream.bindings.ibanQueue-out-0.destination}")
   String ibanWalletTopic;
 
-  @Autowired
   public IbanServiceImpl(CheckIbanRestConnector checkIbanRestConnector, IbanRepository ibanRepository, DecryptRestConnector decryptRestConnector, ObjectMapper mapper, IbanProducer ibanProducer, ErrorProducer errorProducer, AuditUtilities auditUtilities) {
     this.checkIbanRestConnector = checkIbanRestConnector;
     this.ibanRepository = ibanRepository;
