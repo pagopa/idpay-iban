@@ -11,9 +11,13 @@ public class ErrorProducer {
 
   @Value("${spring.cloud.stream.bindings.ibanQueue-out-1.binder}")
   private String binderError;
-  
+
+  private final StreamBridge streamBridge;
+
   @Autowired
-  StreamBridge streamBridge;
+  public ErrorProducer(StreamBridge streamBridge) {
+    this.streamBridge = streamBridge;
+  }
 
   public void sendEvent(Message<?> errorQueueDTO){
     streamBridge.send("ibanQueue-out-1",binderError, errorQueueDTO);

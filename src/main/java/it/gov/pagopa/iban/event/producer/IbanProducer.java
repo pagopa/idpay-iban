@@ -13,8 +13,13 @@ import org.springframework.stereotype.Component;
 public class IbanProducer {
     @Value("${spring.cloud.stream.bindings.ibanQueue-out-0.binder}")
     private String binderIban;
+
+    private final StreamBridge streamBridge;
+
     @Autowired
-    StreamBridge streamBridge;
+    public IbanProducer(StreamBridge streamBridge) {
+        this.streamBridge = streamBridge;
+    }
 
     public void sendIban(IbanQueueWalletDTO iban) {
         streamBridge.send("ibanQueue-out-0", binderIban, buildMessage(iban));

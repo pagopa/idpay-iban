@@ -38,16 +38,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class IbanServiceImpl implements IbanService {
 
-  @Autowired private CheckIbanRestConnector checkIbanRestConnector;
-  @Autowired private IbanRepository ibanRepository;
-  @Autowired private DecryptRestConnector decryptRestConnector;
+  private final CheckIbanRestConnector checkIbanRestConnector;
+  private final IbanRepository ibanRepository;
+  private final DecryptRestConnector decryptRestConnector;
 
-  @Autowired private ObjectMapper mapper;
+  private final ObjectMapper mapper;
 
-  @Autowired IbanProducer ibanProducer;
-  @Autowired ErrorProducer errorProducer;
-  @Autowired
-  AuditUtilities auditUtilities;
+  private final IbanProducer ibanProducer;
+  private final ErrorProducer errorProducer;
+
+  private final AuditUtilities auditUtilities;
 
   @Value(
       "${spring.cloud.stream.binders.kafka-iban.environment.spring.cloud.stream.kafka.binder.brokers}")
@@ -62,6 +62,17 @@ public class IbanServiceImpl implements IbanService {
 
   @Value("${spring.cloud.stream.bindings.ibanQueue-out-0.destination}")
   String ibanWalletTopic;
+
+  @Autowired
+  public IbanServiceImpl(CheckIbanRestConnector checkIbanRestConnector, IbanRepository ibanRepository, DecryptRestConnector decryptRestConnector, ObjectMapper mapper, IbanProducer ibanProducer, ErrorProducer errorProducer, AuditUtilities auditUtilities) {
+    this.checkIbanRestConnector = checkIbanRestConnector;
+    this.ibanRepository = ibanRepository;
+    this.decryptRestConnector = decryptRestConnector;
+    this.mapper = mapper;
+    this.ibanProducer = ibanProducer;
+    this.errorProducer = errorProducer;
+    this.auditUtilities = auditUtilities;
+  }
 
   public IbanListDTO getIbanList(String userId) {
     List<IbanModel> ibanModelList = ibanRepository.findByUserId(userId);

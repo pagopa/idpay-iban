@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class IbanControllerImpl implements IbanController {
 
+    private final IbanService ibanService;
+
     @Autowired
-    IbanService ibanService;
+    public IbanControllerImpl(IbanService ibanService) {
+        this.ibanService = ibanService;
+    }
 
     @Override
     public ResponseEntity<IbanListDTO> getIbanList(String userId) {
