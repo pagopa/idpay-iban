@@ -61,7 +61,7 @@ microservice-chart:
     CHECKIBAN_SERVICE_CODE: pagopa-checkiban
     PDV_DECRYPT_SERVICE_CODE: pdv-ms-tokenizer
 
-  envConfigMapExternals:
+  externalConfigMapValues:
     idpay-common:
       TZ: TZ
     rest-client:
@@ -93,3 +93,9 @@ microservice-chart:
   # tolerations: []
 
   # affinity: {}
+
+  externalConfigMapFiles:
+    create: true
+    configMaps:
+      - name: appinsights-config
+        key: applicationinsights.json
