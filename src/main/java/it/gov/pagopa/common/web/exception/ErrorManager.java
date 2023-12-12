@@ -1,6 +1,7 @@
 package it.gov.pagopa.common.web.exception;
 
 import it.gov.pagopa.common.web.dto.ErrorDTO;
+import it.gov.pagopa.iban.constants.IbanConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ public class ErrorManager {
   private static final ErrorDTO defaultErrorDTO;
 
   static {
-    defaultErrorDTO = new ErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something gone wrong");
+    defaultErrorDTO = new ErrorDTO(IbanConstants.ExceptionCode.GENERIC_ERROR, "Something gone wrong");
   }
 
   @ExceptionHandler(RuntimeException.class)

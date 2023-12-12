@@ -14,7 +14,8 @@ import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.event.producer.ErrorProducer;
 import it.gov.pagopa.iban.event.producer.IbanProducer;
-import it.gov.pagopa.iban.exception.IbanException;
+import it.gov.pagopa.iban.exception.CheckIbanInvocationException;
+import it.gov.pagopa.iban.exception.IbanNotFoundException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import it.gov.pagopa.iban.utils.AuditUtilities;
@@ -154,13 +155,13 @@ public class IbanServiceImpl implements IbanService {
         ResponseCheckIbanDTO responseCheckIbanDTO =
             mapper.readValue(e.contentUTF8(), ResponseCheckIbanDTO.class);
         if (responseCheckIbanDTO == null) {
-          throw new IbanException(e.status(), e.contentUTF8());
+          throw new CheckIbanInvocationException("An error occurred in the checkiban invocation");
         }
         if (responseCheckIbanDTO.getErrors() != null) {
           errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
           errorDescription = responseCheckIbanDTO.getErrors().get(0).getDescription();
         }
-      } catch (JacksonException | IbanException exception) {
+      } catch (JacksonException | CheckIbanInvocationException exception) {
         errorCode = String.valueOf(e.status());
         errorDescription = e.contentUTF8();
       }
@@ -258,7 +259,7 @@ public class IbanServiceImpl implements IbanService {
         ibanRepository
             .findByIbanAndUserId(iban, userId);
     if (ibanModelList.isEmpty()) {
-      throw new IbanException(HttpStatus.NOT_FOUND.value(), "Iban not found.");
+      throw new IbanNotFoundException("Iban not found for the current user");
     }
     ibanModelList.sort(Comparator.comparing(IbanModel::getCheckIbanResponseDate).reversed());
     return new IbanDTO(
