@@ -1224,6 +1224,55 @@
 									"response": []
 								},
 								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "Get Wallet Status",
 									"event": [
 										{
@@ -1232,7 +1281,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
@@ -1361,7 +1410,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
@@ -1729,6 +1778,55 @@
 									"response": []
 								},
 								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "Get Wallet Status",
 									"event": [
 										{
@@ -1737,7 +1835,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
@@ -1866,7 +1964,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
@@ -2363,6 +2461,55 @@
 									"response": []
 								},
 								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "Get Wallet Status",
 									"event": [
 										{
@@ -2371,7 +2518,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
@@ -2500,7 +2647,7 @@
 												"exec": [
 													"pm=instrumentPmMethod(pm);\r",
 													"\r",
-													"pm.test(\"Payment - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
