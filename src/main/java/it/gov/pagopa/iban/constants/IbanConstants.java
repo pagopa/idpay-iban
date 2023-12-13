@@ -26,6 +26,13 @@ public class IbanConstants {
     private ExceptionCode() {}
   }
 
+  public static final class ExceptionMessage {
+    public static final String IBAN_NOT_FOUND_MSG = "Iban not found for the current user";
+    public static final String CHECKIBAN_INVOCATION_ERROR_MSG = "An error occurred in the checkiban invocation";
+
+    private ExceptionMessage() {}
+  }
+
   private IbanConstants(){
 
   }

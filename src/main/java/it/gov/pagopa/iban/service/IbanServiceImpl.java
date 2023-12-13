@@ -155,7 +155,7 @@ public class IbanServiceImpl implements IbanService {
         ResponseCheckIbanDTO responseCheckIbanDTO =
             mapper.readValue(e.contentUTF8(), ResponseCheckIbanDTO.class);
         if (responseCheckIbanDTO == null) {
-          throw new CheckIbanInvocationException("An error occurred in the checkiban invocation");
+          throw new CheckIbanInvocationException(IbanConstants.ExceptionMessage.CHECKIBAN_INVOCATION_ERROR_MSG);
         }
         if (responseCheckIbanDTO.getErrors() != null) {
           errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
@@ -259,7 +259,7 @@ public class IbanServiceImpl implements IbanService {
         ibanRepository
             .findByIbanAndUserId(iban, userId);
     if (ibanModelList.isEmpty()) {
-      throw new IbanNotFoundException("Iban not found for the current user");
+      throw new IbanNotFoundException(IbanConstants.ExceptionMessage.IBAN_NOT_FOUND_MSG);
     }
     ibanModelList.sort(Comparator.comparing(IbanModel::getCheckIbanResponseDate).reversed());
     return new IbanDTO(
