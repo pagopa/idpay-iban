@@ -1286,7 +1286,7 @@
 													"});\r",
 													"\r",
 													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
 												],
@@ -1415,7 +1415,7 @@
 													"});\r",
 													"\r",
 													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}"
 												],
 												"type": "text/javascript"
@@ -1791,7 +1791,7 @@
 													"});\r",
 													"\r",
 													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}"
 												],
 												"type": "text/javascript"
@@ -1840,7 +1840,7 @@
 													"});\r",
 													"\r",
 													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
 												],
@@ -1969,7 +1969,7 @@
 													"});\r",
 													"\r",
 													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}"
 												],
 												"type": "text/javascript"
@@ -2474,7 +2474,7 @@
 													"});\r",
 													"\r",
 													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}"
 												],
 												"type": "text/javascript"
@@ -2523,7 +2523,7 @@
 													"});\r",
 													"\r",
 													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
 												],
@@ -2652,7 +2652,7 @@
 													"});\r",
 													"\r",
 													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
-													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}"
 												],
 												"type": "text/javascript"
