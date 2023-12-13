@@ -1393,7 +1393,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_2}}",
+											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_FAKE}}",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1405,7 +1405,7 @@
 											"query": [
 												{
 													"key": "fiscalCode",
-													"value": "{{CF_2}}"
+													"value": "{{CF_FAKE}}"
 												}
 											]
 										}
@@ -1780,7 +1780,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_1}}",
+									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_FAKE_1}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1792,7 +1792,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{CF_1}}"
+											"value": "{{CF_FAKE_1}}"
 										}
 									]
 								}
@@ -1800,7 +1800,7 @@
 							"response": []
 						},
 						{
-							"name": "Get Iban List Copy",
+							"name": "Get Iban List",
 							"event": [
 								{
 									"listen": "test",
@@ -1810,9 +1810,9 @@
 											"    pm.response.to.have.status(404);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Iban - Unhappy case - Iban not Found - getting the iban list - checking response message to be equals to Iban not found.\", function () {\r",
+											"pm.test(\"Iban - Unhappy case - Iban not Found - getting the iban list - checking response code to be equals to IBAN_NOT_FOUND.\", function () {\r",
 											"    const responseJson = pm.response.json();\r",
-											"    pm.expect(responseJson.message).to.eql('Iban not found.');\r",
+											"    pm.expect(responseJson.code).to.eql('IBAN_NOT_FOUND');\r",
 											"});\r",
 											""
 										],
