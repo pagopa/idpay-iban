@@ -1285,7 +1285,7 @@
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
-													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
 													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
@@ -1839,7 +1839,7 @@
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
-													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
 													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
@@ -2522,7 +2522,7 @@
 													"    pm.response.to.have.status(200);\r",
 													"});\r",
 													"\r",
-													"if (pm.response.json().status != \"REFUNDABLE\") {\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
 													"    retryRequest(postman, pm, setTimeout, 10000);\r",
 													"}\r",
 													""
