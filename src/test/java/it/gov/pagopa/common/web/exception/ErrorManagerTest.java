@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
     ErrorManagerTest.TestController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @ContextConfiguration(classes = {ErrorManagerTest.TestController.class, ErrorManager.class})
 class ErrorManagerTest {
+  private static final String EXPECTED_GENERIC_ERROR = "{\"code\":\"Error\",\"message\":\"Something gone wrong\"}";
 
   @Autowired
   private MockMvc mockMvc;
@@ -85,7 +86,7 @@ class ErrorManagerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isInternalServerError())
         .andExpect(MockMvcResultMatchers.content()
-            .json("{\"code\":\"IBAN_GENERIC_ERROR\",\"message\":\"Something gone wrong\"}"));
+            .json(EXPECTED_GENERIC_ERROR));
 
     Mockito.doThrow(
             new ClientException(HttpStatus.BAD_REQUEST, "ClientException with httpStatus and message"))
@@ -95,7 +96,7 @@ class ErrorManagerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isInternalServerError())
         .andExpect(MockMvcResultMatchers.content()
-            .json("{\"code\":\"IBAN_GENERIC_ERROR\",\"message\":\"Something gone wrong\"}"));
+            .json(EXPECTED_GENERIC_ERROR));
 
     Mockito.doThrow(new ClientException(HttpStatus.BAD_REQUEST,
             "ClientException with httpStatus, message and throwable", new Throwable()))
@@ -105,7 +106,7 @@ class ErrorManagerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isInternalServerError())
         .andExpect(MockMvcResultMatchers.content()
-            .json("{\"code\":\"IBAN_GENERIC_ERROR\",\"message\":\"Something gone wrong\"}"));
+            .json(EXPECTED_GENERIC_ERROR));
   }
 
   @Test
@@ -117,6 +118,6 @@ class ErrorManagerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isInternalServerError())
         .andExpect(MockMvcResultMatchers.content()
-            .json("{\"code\":\"IBAN_GENERIC_ERROR\",\"message\":\"Something gone wrong\"}"));
+            .json(EXPECTED_GENERIC_ERROR));
   }
 }
