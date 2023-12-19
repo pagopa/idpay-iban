@@ -1,6 +1,7 @@
 package it.gov.pagopa.iban.exception;
 
 import it.gov.pagopa.common.web.exception.ServiceException;
+import it.gov.pagopa.common.web.exception.ServiceExceptionResponse;
 import it.gov.pagopa.iban.constants.IbanConstants;
 
 public class CheckIbanInvocationException extends ServiceException {
@@ -10,10 +11,10 @@ public class CheckIbanInvocationException extends ServiceException {
   }
 
   public CheckIbanInvocationException(String code, String message) {
-    this(code, message, false, null);
+    this(code, message, null, false, null);
   }
 
-  public CheckIbanInvocationException(String code, String message, boolean printStackTrace, Throwable ex) {
-    super(code, message, printStackTrace, ex);
+  public CheckIbanInvocationException(String code, String message, ServiceExceptionResponse response, boolean printStackTrace, Throwable ex) {
+    super(code, message, response, printStackTrace, ex);
   }
 }
