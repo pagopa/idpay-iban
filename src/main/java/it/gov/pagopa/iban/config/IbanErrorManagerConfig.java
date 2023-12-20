@@ -19,4 +19,9 @@ public class IbanErrorManagerConfig {
     ErrorDTO tooManyRequestsErrorDTO() {
         return new ErrorDTO(IbanConstants.ExceptionCode.TOO_MANY_REQUESTS, "Too Many Requests");
     }
+
+    @Bean
+    ErrorDTO templateValidationErrorDTO(){
+        return new ErrorDTO(IbanConstants.ExceptionCode.INVALID_REQUEST, null);
+    }
 }
