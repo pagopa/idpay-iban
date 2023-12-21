@@ -27,12 +27,11 @@ public class ServiceExceptionHandler {
   @SuppressWarnings("squid:S1452")
   @ExceptionHandler(ServiceException.class)
   protected ResponseEntity<? extends ServiceExceptionPayload> handleException(ServiceException error, HttpServletRequest request) {
-    if(null != error.getPayload()){
-      return handleBodyProvidedException(error,request);
+    if (null != error.getPayload()) {
+      return handleBodyProvidedException(error, request);
     }
     return errorManager.handleException(transcodeException(error), request);
   }
-
 
   private ClientException transcodeException(ServiceException error) {
     HttpStatus httpStatus = transcodeMap.get(error.getClass());
@@ -42,10 +41,10 @@ public class ServiceExceptionHandler {
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    return new ClientExceptionWithBody(httpStatus, error.getCode(), error.getMessage(), error.getCause());
+    return new ClientExceptionWithBody(httpStatus, error.getCode(), error.getMessage(), error.isPrintStackTrace(), error);
   }
 
-  private ResponseEntity<? extends ServiceExceptionPayload> handleBodyProvidedException(ServiceException error, HttpServletRequest request){
+  private ResponseEntity<? extends ServiceExceptionPayload> handleBodyProvidedException(ServiceException error, HttpServletRequest request) {
     ClientException clientException = transcodeException(error);
     ErrorManager.logClientException(clientException, request);
 
@@ -53,5 +52,4 @@ public class ServiceExceptionHandler {
             .contentType(MediaType.APPLICATION_JSON)
             .body(error.getPayload());
   }
-
 }

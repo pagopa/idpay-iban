@@ -34,19 +34,18 @@ public class ErrorManager {
       ErrorDTO errorDTO;
       HttpStatus httpStatus;
       if (error instanceof ClientExceptionWithBody clientExceptionWithBody){
-        httpStatus = clientExceptionWithBody.getHttpStatus();
+        httpStatus=clientExceptionWithBody.getHttpStatus();
         errorDTO = new ErrorDTO(clientExceptionWithBody.getCode(),  error.getMessage());
       }
       else {
-        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        httpStatus=HttpStatus.INTERNAL_SERVER_ERROR;
         errorDTO = defaultErrorDTO;
       }
       return ResponseEntity.status(httpStatus)
-          .contentType(MediaType.APPLICATION_JSON)
-          .body(errorDTO);
+              .contentType(MediaType.APPLICATION_JSON)
+              .body(errorDTO);
     }
   }
-
   public static void logClientException(RuntimeException error, HttpServletRequest request) {
     Throwable unwrappedException = error.getCause() instanceof ServiceException
             ? error.getCause()
