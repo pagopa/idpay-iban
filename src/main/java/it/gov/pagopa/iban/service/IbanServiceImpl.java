@@ -6,12 +6,7 @@ import feign.FeignException;
 import it.gov.pagopa.iban.checkiban.CheckIbanRestConnector;
 import it.gov.pagopa.iban.constants.IbanConstants;
 import it.gov.pagopa.iban.decrypt.DecryptRestConnector;
-import it.gov.pagopa.iban.dto.DecryptedCfDTO;
-import it.gov.pagopa.iban.dto.IbanDTO;
-import it.gov.pagopa.iban.dto.IbanListDTO;
-import it.gov.pagopa.iban.dto.IbanQueueDTO;
-import it.gov.pagopa.iban.dto.IbanQueueWalletDTO;
-import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
+import it.gov.pagopa.iban.dto.*;
 import it.gov.pagopa.iban.event.producer.ErrorProducer;
 import it.gov.pagopa.iban.event.producer.IbanProducer;
 import it.gov.pagopa.iban.exception.CheckIbanInvocationException;
@@ -19,6 +14,12 @@ import it.gov.pagopa.iban.exception.IbanNotFoundException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import it.gov.pagopa.iban.utils.AuditUtilities;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Service;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -26,13 +27,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -155,7 +149,7 @@ public class IbanServiceImpl implements IbanService {
         ResponseCheckIbanDTO responseCheckIbanDTO =
             mapper.readValue(e.contentUTF8(), ResponseCheckIbanDTO.class);
         if (responseCheckIbanDTO == null) {
-          throw new CheckIbanInvocationException(IbanConstants.ExceptionMessage.CHECKIBAN_INVOCATION_ERROR_MSG);
+          throw new CheckIbanInvocationException(IbanConstants.ExceptionMessage.CHECKIBAN_INVOCATION_ERROR_MSG, true, e);
         }
         if (responseCheckIbanDTO.getErrors() != null) {
           errorCode = responseCheckIbanDTO.getErrors().get(0).getCode();
