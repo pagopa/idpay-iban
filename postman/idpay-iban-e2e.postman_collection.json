@@ -20,6 +20,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test('Iban - Happy case - Iban empty list - Generate Token IO', () => {\r",
 											"    //verify response HTTP status \r",
 											"    pm.response.to.have.status(200);\r",
@@ -84,6 +86,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test(\"Iban - Happy case - Iban empty list - getting the iban list - response status is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
@@ -163,6 +167,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"let textResponse = pm.response.text()\r",
 															"\r",
 															"pm.test('Iban - Happy case - Initiative creation - Generate Portal Token (Ente Admin)', () => {\r",
@@ -235,9 +241,9 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"var jsonData = JSON.parse(responseBody);\r",
-															"// console.log('jsondata', jsonData);\r",
-															"// console.log('jsondata.initiativeId', jsonData.initiativeId);\r",
 															"pm.collectionVariables.set('initiativeId', jsonData.initiativeId);\r",
 															"\r",
 															"pm.test(\"Iban - Happy case - Initiative creation - STEP1 - Status test 201\", function () {\r",
@@ -334,6 +340,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative creation - STEP2 - Status test 204\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});"
@@ -401,6 +409,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative creation - STEP3 - Status test 204\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});"
@@ -451,6 +461,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative creation - STEP 4 - Status test 204\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});"
@@ -551,6 +563,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative creation - STEP 5 - Status test 204\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});"
@@ -685,6 +699,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"let textResponse = pm.response.text()\r",
 															"\r",
 															"pm.test('Iban - Happy case - Initiative approving - Generate Portal Token (PagoPA Admin)', () => {\r",
@@ -742,6 +758,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative approving - PagoPA Admin updates initiative status into APPROVED - (Responses with 204)\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});"
@@ -753,7 +771,7 @@
 													"listen": "prerequest",
 													"script": {
 														"exec": [
-															"//setTimeout(function(){}, 20000); //milliseconds"
+															""
 														],
 														"type": "text/javascript"
 													}
@@ -815,6 +833,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"let textResponse = pm.response.text()\r",
 															"\r",
 															"pm.test('Iban - Happy case - Initiative pubblication - Generate Portal Token (Ente Admin)', () => {\r",
@@ -872,6 +892,8 @@
 													"listen": "test",
 													"script": {
 														"exec": [
+															"pm=instrumentPmMethod(pm);\r",
+															"\r",
 															"pm.test(\"Iban - Happy case - Initiative pubblication - Ente Admin updates initiative status into PUBLISHED -(Responses with 204)\", function () {\r",
 															"    pm.response.to.have.status(204);\r",
 															"});\r",
@@ -952,6 +974,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test('Iban - Happy case - Iban List status OK - Onboarding - Generate Token IO', () => {\r",
 													"    //verify response HTTP status \r",
 													"    pm.response.to.have.status(200);\r",
@@ -1016,6 +1040,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status OK - Onboarding - Accept T&C - Response status is 204\", function () {\r",
 													"    pm.response.to.have.status(204);\r",
 													"});"
@@ -1078,6 +1104,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status OK - Onboarding - Prerequisites Check - Response status is 200,202\", function () {\r",
 													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
 													"});"
@@ -1140,6 +1168,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status OK - Onboarding - PDND + Autocertification - Response status is 202\", function () {\r",
 													"    pm.response.to.have.status(202);\r",
 													"});"
@@ -1151,7 +1181,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"setTimeout(() => {}, 10000);"
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -1192,6 +1222,105 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 1000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -1205,6 +1334,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status OK - enrolling iban - response status is 200\", function () {\r",
 													"    pm.response.to.have.status(200);\r",
 													"});"
@@ -1216,7 +1347,7 @@
 											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"setTimeout(() => {}, 15000)"
+													""
 												],
 												"type": "text/javascript"
 											}
@@ -1269,6 +1400,55 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -1279,6 +1459,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test(\"Iban - Happy case - Iban List status OK - getting the iban list - response status is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
@@ -1296,7 +1478,7 @@
 									"listen": "prerequest",
 									"script": {
 										"exec": [
-											"setTimeout(() => {}, 20000)"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -1355,6 +1537,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test('Iban - Happy case - Iban List status UNKNOWN - Onboarding - Generate Token IO', () => {\r",
 													"    //verify response HTTP status \r",
 													"    pm.response.to.have.status(200);\r",
@@ -1393,7 +1577,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_2}}",
+											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_FAKE}}",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -1405,7 +1589,7 @@
 											"query": [
 												{
 													"key": "fiscalCode",
-													"value": "{{CF_2}}"
+													"value": "{{CF_FAKE}}"
 												}
 											]
 										}
@@ -1419,6 +1603,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status UNKNOWN - Onboarding - Accept T&C - Response status is 204\", function () {\r",
 													"    pm.response.to.have.status(204);\r",
 													"});"
@@ -1481,6 +1667,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"iban - Happy case - Iban List status UNKNOWN - Onboarding - Prerequisites Check - Response status is 200,202\", function () {\r",
 													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
 													"});"
@@ -1543,6 +1731,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Happy case - Iban List status UNKNOWN - Onboarding - PDND + Autocertification - Response status is 202\", function () {\r",
 													"    pm.response.to.have.status(202);\r",
 													"});"
@@ -1586,6 +1776,105 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -1596,21 +1885,23 @@
 									"name": "Enroll Iban",
 									"event": [
 										{
-											"listen": "test",
+											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"pm.test(\"Iban - Happy case - Iban List status UNKNOWN - enrolling iban - response status is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});"
+													""
 												],
 												"type": "text/javascript"
 											}
 										},
 										{
-											"listen": "prerequest",
+											"listen": "test",
 											"script": {
 												"exec": [
-													"setTimeout(() => {}, 10000)"
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Iban List status UNKNOWN - enrolling iban - response status is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
 												],
 												"type": "text/javascript"
 											}
@@ -1663,6 +1954,55 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -1673,6 +2013,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test(\"Iban - Happy case - Iban List status UNKNOWN - getting the iban list - response status is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
@@ -1742,6 +2084,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test('Iban - Unhappy case - Iban not Found - Generate Token IO', () => {\r",
 											"    //verify response HTTP status \r",
 											"    pm.response.to.have.status(200);\r",
@@ -1780,7 +2124,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_1}}",
+									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_FAKE_1}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1792,7 +2136,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{CF_1}}"
+											"value": "{{CF_FAKE_1}}"
 										}
 									]
 								}
@@ -1800,19 +2144,21 @@
 							"response": []
 						},
 						{
-							"name": "Get Iban List Copy",
+							"name": "Get Iban List",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test(\"Iban - Unhappy case - Iban not Found - getting the iban list - response status is 404\", function () {\r",
 											"    pm.response.to.have.status(404);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Iban - Unhappy case - Iban not Found - getting the iban list - checking response message to be equals to Iban not found.\", function () {\r",
+											"pm.test(\"Iban - Unhappy case - Iban not Found - getting the iban list - checking response code to be equals to IBAN_NOT_FOUND.\", function () {\r",
 											"    const responseJson = pm.response.json();\r",
-											"    pm.expect(responseJson.message).to.eql('Iban not found.');\r",
+											"    pm.expect(responseJson.code).to.eql('IBAN_NOT_FOUND');\r",
 											"});\r",
 											""
 										],
@@ -1874,6 +2220,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test('Iban - Unhappy case - Iban list KO - Onboarding - Generate Token IO', () => {\r",
 													"    //verify response HTTP status \r",
 													"    pm.response.to.have.status(200);\r",
@@ -1938,6 +2286,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Unhappy case - Iban List KO - Onboarding - Accept T&C - Response status is 204\", function () {\r",
 													"    pm.response.to.have.status(204);\r",
 													"});"
@@ -2000,6 +2350,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Unhappy case - Iban List KO - Onboarding - Prerequisites Check - Response status is 200,202\", function () {\r",
 													"    pm.expect(pm.response.code).to.be.oneOf([200,202]);\r",
 													"});"
@@ -2062,6 +2414,8 @@
 											"listen": "test",
 											"script": {
 												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
 													"pm.test(\"Iban - Unhappy case - Iban List KO - Onboarding - PDND + Autocertification - Response status is 202\", function () {\r",
 													"    pm.response.to.have.status(202);\r",
 													"});"
@@ -2105,6 +2459,105 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Onboarding Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"ONBOARDING_OK\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/onboarding/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"onboarding",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if (pm.response.json().status != \"NOT_REFUNDABLE\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -2115,21 +2568,23 @@
 									"name": "Enroll Iban",
 									"event": [
 										{
-											"listen": "test",
+											"listen": "prerequest",
 											"script": {
 												"exec": [
-													"pm.test(\"Iban - Unhappy case - Iban List KO - enrolling iban - response status is 200\", function () {\r",
-													"    pm.response.to.have.status(200);\r",
-													"});"
+													""
 												],
 												"type": "text/javascript"
 											}
 										},
 										{
-											"listen": "prerequest",
+											"listen": "test",
 											"script": {
 												"exec": [
-													"setTimeout(() => {}, 10000)"
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Unhappy case - Iban List KO - enrolling iban - response status is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
 												],
 												"type": "text/javascript"
 											}
@@ -2182,6 +2637,55 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "Get Wallet Status",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm=instrumentPmMethod(pm);\r",
+													"\r",
+													"pm.test(\"Iban - Happy case - Onboarding - Get Onboarding Status - return status 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"if(pm.response.json().status != \"NOT_REFUNDABLE_ONLY_IBAN\") {\r",
+													"    retryRequest(postman, pm, setTimeout, 10000);\r",
+													"}"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{tokenIO}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/idpay/wallet/{{initiativeId}}/status",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"idpay",
+												"wallet",
+												"{{initiativeId}}",
+												"status"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -2192,6 +2696,8 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"pm=instrumentPmMethod(pm);\r",
+											"\r",
 											"pm.test(\"Iban - Unhappy case - Iban List KO - getting the iban list - response status is 200\", function () {\r",
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
@@ -2258,6 +2764,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"pm=instrumentPmMethod(pm);\r",
+							"\r",
 							"pm.test(\"Payment - Unhappy Case - Delete Initiative - Status test 204\", function () {\r",
 							"    pm.response.to.have.status(204);\r",
 							"});"
@@ -2299,7 +2807,47 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"skipTests=false;",
+					"",
+					"instrumentPmMethod = (pm) => {",
+					"    const pmProxy = {",
+					"        get: function(pm, key) {",
+					"            if (key == 'test') {",
+					"                return (skipTests ? pm.test.skip : pm.test);",
+					"            }",
+					"            return pm[key];",
+					"        }",
+					"    };",
+					"",
+					"    return new Proxy(pm, pmProxy);",
+					"}",
+					"",
+					"retryRequest = (postman, pm, setTimeout, waitingMillis = 500, maxAttempts = 20) => {",
+					"    if(!postman || !pm || !setTimeout){",
+					"        throw new Error(\"Invalid invoke to retryRequest function! Some required parameters are undefined: postman=\" + postman + \", pm=\" + pm + \", setTimeout=\" + setTimeout)",
+					"    }",
+					"",
+					"    const retryVariableName = \"retry_\" + pm.info.requestId",
+					"    const attempt = (pm.variables.get(retryVariableName) ?? 0) + 1;",
+					"    if(attempt < maxAttempts) {",
+					"        console.info(pm.info.requestName + \" not ready, retrying [attempt \" + attempt + \"/\" + maxAttempts + \"] after \" + waitingMillis + \" ms\");",
+					"        pm.variables.set(retryVariableName, attempt)",
+					"        postman.setNextRequest(pm.info.requestId);",
+					"        return setTimeout(()=>{}, waitingMillis);",
+					"    } else {",
+					"        pm.test(pm.info.requestName + \" not ready\", () => pm.expect.fail(attempt + \" attempts\"));",
+					"    }",
+					"}",
+					"",
+					"retryWhenStatusCode = (postman, pm, setTimeout, statusCode, waitingMillis, maxAttempts) => {",
+					"    if(pm.response.code == statusCode){",
+					"        console.log(\"Obtained \" + statusCode + \"! Performing retry...\")",
+					"        skipTests=true;",
+					"        return retryRequest(postman, pm, setTimeout, waitingMillis, maxAttempts)",
+					"    }",
+					"}",
+					"",
+					"retryWhenStatusCode(postman, pm, setTimeout, 429);"
 				]
 			}
 		}
