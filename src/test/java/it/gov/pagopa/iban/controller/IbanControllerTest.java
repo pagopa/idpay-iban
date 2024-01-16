@@ -4,9 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.gov.pagopa.common.web.dto.ErrorDTO;
+import it.gov.pagopa.common.web.exception.ServiceExceptionHandler;
+import it.gov.pagopa.common.web.exception.ValidationExceptionHandler;
+import it.gov.pagopa.iban.config.ServiceExceptionConfig;
+import it.gov.pagopa.iban.constants.IbanConstants;
 import it.gov.pagopa.iban.dto.IbanDTO;
 import it.gov.pagopa.iban.dto.IbanListDTO;
-import it.gov.pagopa.iban.exception.IbanException;
+import it.gov.pagopa.iban.exception.IbanNotFoundException;
 import it.gov.pagopa.iban.service.IbanService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +33,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(value = {
-    IbanController.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
+    IbanController.class, ServiceExceptionConfig.class}, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class IbanControllerTest {
 
   @MockBean
@@ -93,8 +98,8 @@ class IbanControllerTest {
   @Test
   void getIban_ko() throws Exception {
     Mockito.doThrow(
-            new IbanException(
-                HttpStatus.NOT_FOUND.value(), String.format("Iban for userId %s not found.",
+            new IbanNotFoundException(
+                    IbanConstants.ExceptionCode.IBAN_NOT_FOUND, String.format("Iban for userId %s not found.",
                 USER_ID)))
         .when(ibanServiceMock)
         .getIban(IBAN, USER_ID);
@@ -107,7 +112,7 @@ class IbanControllerTest {
 
     ErrorDTO error =
         objectMapper.readValue(res.getResponse().getContentAsString(), ErrorDTO.class);
-    assertEquals(HttpStatus.NOT_FOUND.value(), error.getCode());
+    assertEquals(IbanConstants.ExceptionCode.IBAN_NOT_FOUND, error.getCode());
     assertEquals(String.format("Iban for userId %s not found.",
         USER_ID), error.getMessage());
   }

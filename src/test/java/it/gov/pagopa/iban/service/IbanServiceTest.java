@@ -27,7 +27,8 @@ import it.gov.pagopa.iban.dto.PayloadCheckIbanDTO;
 import it.gov.pagopa.iban.dto.ResponseCheckIbanDTO;
 import it.gov.pagopa.iban.event.producer.ErrorProducer;
 import it.gov.pagopa.iban.event.producer.IbanProducer;
-import it.gov.pagopa.iban.exception.IbanException;
+import it.gov.pagopa.iban.exception.CheckIbanInvocationException;
+import it.gov.pagopa.iban.exception.IbanNotFoundException;
 import it.gov.pagopa.iban.model.IbanModel;
 import it.gov.pagopa.iban.repository.IbanRepository;
 import it.gov.pagopa.iban.utils.AuditUtilities;
@@ -289,7 +290,7 @@ class IbanServiceTest {
       return null;
     }).when(ibanProducer).sendIban(Mockito.any(IbanQueueWalletDTO.class));
 
-    Mockito.doThrow(new IbanException(400, "")).when(ibanProducer)
+    Mockito.doThrow(new CheckIbanInvocationException(IbanConstants.ExceptionCode.GENERIC_ERROR, "")).when(ibanProducer)
         .sendIban(Mockito.any());
 
     try {
@@ -613,8 +614,8 @@ class IbanServiceTest {
     try {
       ibanService.getIban(IBAN_OK, USER_ID);
       Assertions.fail();
-    } catch (IbanException e) {
-      assertEquals(HttpStatus.NOT_FOUND.value(), e.getCode());
+    } catch (IbanNotFoundException e) {
+      assertEquals(IbanConstants.ExceptionCode.IBAN_NOT_FOUND, e.getCode());
     }
   }
 
