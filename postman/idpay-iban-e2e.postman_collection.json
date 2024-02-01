@@ -60,7 +60,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_fake}}",
+									"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_fake_1}}",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -72,7 +72,7 @@
 									"query": [
 										{
 											"key": "fiscalCode",
-											"value": "{{CF_fake}}"
+											"value": "{{CF_fake_1}}"
 										}
 									]
 								}
@@ -1465,9 +1465,9 @@
 											"    pm.response.to.have.status(200);\r",
 											"});\r",
 											"\r",
-											"pm.test(\"Iban - Happy case - Iban List status OK - getting the iban list - checking iban status to be equals to OK\", function () {\r",
+											"pm.test(\"Iban - Happy case - Iban List status OK - getting the iban list - checking iban status to be equals to OK (UNKNOWN because for the moment IBAN is fake)\", function () {\r",
 											"    let responseJson = pm.response.json()\r",
-											"    pm.expect(responseJson.ibanList[(responseJson.ibanList.length)-1].checkIbanStatus).to.be.eql('OK');\r",
+											"    pm.expect(responseJson.ibanList[(responseJson.ibanList.length)-1].checkIbanStatus).to.be.eql('UNKNOWN_PSP');\r",
 											"});\r",
 											""
 										],
@@ -2976,6 +2976,11 @@
 		{
 			"key": "CF_fake",
 			"value": "TMOVNC75S46X000F",
+			"type": "string"
+		},
+		{
+			"key": "CF_fake_1",
+			"value": "XDRVTA75S46X000F",
 			"type": "string"
 		}
 	]
