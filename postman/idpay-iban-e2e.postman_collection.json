@@ -1379,7 +1379,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"iban\": \"{{IBAN_3}}\",\r\n    \"description\": \"conto cointestato\"\r\n}",
+											"raw": "{\r\n    \"iban\": \"{{IBAN_2}}\",\r\n    \"description\": \"conto cointestato\"\r\n}",
 											"options": {
 												"raw": {
 													"language": "json"
