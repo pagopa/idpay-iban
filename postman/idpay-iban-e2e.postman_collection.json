@@ -2260,7 +2260,7 @@
 											}
 										],
 										"url": {
-											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_fake}}",
+											"raw": "{{baseUrl}}/rtd/mock-io/login?fiscalCode={{CF_FAKE_2}}",
 											"host": [
 												"{{baseUrl}}"
 											],
@@ -2272,7 +2272,7 @@
 											"query": [
 												{
 													"key": "fiscalCode",
-													"value": "{{CF_fake}}"
+													"value": "{{CF_FAKE_2}}"
 												}
 											]
 										}
