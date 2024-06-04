@@ -149,7 +149,7 @@ components:
       headers:
         $ref: "#/components/schemas/ErrorQueueHeader"
       payload:
-        $ref: "#/components/schemas/IbanQueueDTO"
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
     CheckIbanError:
       contentType: application/json
       description: >-
@@ -158,43 +158,15 @@ components:
       headers:
         $ref: "#/components/schemas/ErrorQueueHeader"
       payload:
-        $ref: "#/components/schemas/IbanQueueDTO"
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
     SaveIban:
       contentType: application/json
       description: >-
         Event received when an IBAN needs to be saved.
       summary: Instructs the application to save an IBAN.
       payload:
-        $ref: "#/components/schemas/IbanQueueDTO"
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
   schemas:
-    IbanQueueDTO:
-      type: object
-      properties:
-        userId:
-          type: string
-          description: ID of the user
-          example: bcf3651c-d2d3-4998-81a9-5f24302ab674
-        initiativeId:
-          type: string
-          description: ID of the initiative
-          example: 661626073785876cb5aa7601
-        iban:
-          type: string
-          description: IBAN (International Bank Account Number)
-          example: IT60X0542811101000000123456
-        description:
-          type: string
-          description: description
-          example: description
-        queueDate:
-          type: string
-          description: Date of queuing
-          format: date-time
-          example: "2024-04-10T09:15:30Z"
-        channel:
-          type: string
-          description: Channel of origin
-          example: APP_IO
     HeaderToWallet:
       type: object
       properties:
