@@ -1,0 +1,239 @@
+asyncapi: 2.0.0
+info:
+  title: Iban Service
+  version: 1.0.0
+  description: >-
+    Its purpose is to ---
+tags:
+  - name: "ibanEnrollmentFromIssuerToWallet"
+    description: "Notifier Wallet of a iban enrollment"
+  - name: "checkIbanKOToWallet"
+    description: "Notifier Wallet of a check iban KO"
+  - name: "checkIbanExceptionToWallet"
+    description: "Notifier Wallet of an exception during check iban"
+  - name: "saveOkToWallet"
+    description: "Notifier Wallet of check iban ok"
+  - name: "saveUnknownToWallet"
+    description: "Notifier Wallet of iban with unknown psp save"
+  - name: "checkIbanError"
+    description: "Send cause 429 error during check iban"
+  - name: "sendIbanToWalletError"
+    description: "Send cause error in sending iban to wallet"
+  - name: "saveIban"
+    description: "Create iban document"
+channels:
+  iban-enrollment-iban-from-issuer-to-wallet:
+    publish:
+      message:
+        $ref: '#/components/messages/IbanEnrollmentFromIssuerToWallet'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_outcome_topic
+      tags:
+        - name: "ibanEnrollmentFromIssuerToWallet"
+  iban-check-Iban-KO-to-wallet:
+    publish:
+      message:
+        $ref: '#/components/messages/CheckIbanKOToWallet'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_outcome_topic
+      tags:
+        - name: "checkIbanKOToWallet"
+  iban-check-iban-exception-to-wallet:
+    publish:
+      message:
+        $ref: '#/components/messages/CheckIbanExceptionToWallet'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_outcome_topic
+      tags:
+        - name: "checkIbanExceptionToWallet"
+  iban-save-OK-to-wallet:
+    publish:
+      message:
+        $ref: '#/components/messages/SaveOKToWallet'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_outcome_topic
+      tags:
+        - name: "saveOKToWallet"
+  iban-save-unknow-to-wallet:
+    publish:
+      message:
+        $ref: '#/components/messages/SaveUnknownToWallet'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_outcome_topic
+      tags:
+        - name: "saveUnknownToWallet"
+  iban-send-iban-to-wallet-error:
+    publish:
+      message:
+        $ref: '#/components/messages/SendIbanToWalletError'
+      bindings:
+        kafka:
+          topic: idpay_error_topic
+      tags:
+        - name: "sendIbanToWalletError"
+  iban-check-iban-error:
+    publish:
+      message:
+        $ref: '#/components/messages/CheckIbanError'
+      bindings:
+        kafka:
+          topic: idpay_error_topic
+      tags:
+        - name: "checkIbanError"
+  iban-save-iban:
+    subscribe:
+      message:
+        $ref: '#/components/messages/SaveIban'
+      bindings:
+        kafka:
+          topic: idpay_checkiban_evaluation_topic
+      tags:
+        - name: "saveIban"
+components:
+  messages:
+    IbanEnrollmentFromIssuerToWallet:
+      contentType: application/json
+      description: >-
+        Event sent to the Wallet application to notify the enrollment of an IBAN.
+      summary: Notification to the Wallet application of an IBAN enrollment.
+      headers:
+        $ref: "#/components/schemas/HeaderToWallet"
+      payload:
+        $ref: "#/components/schemas/IbanQueueWalletDTO"
+    CheckIbanKOToWallet:
+      contentType: application/json
+      description: >-
+        Event sent to the Wallet application to notify that an IBAN check has failed.
+      summary: Notification to the Wallet application of a failed IBAN check.
+      headers:
+        $ref: "#/components/schemas/HeaderToWallet"
+      payload:
+        $ref: "#/components/schemas/IbanQueueWalletDTO"
+    CheckIbanExceptionToWallet:
+      contentType: application/json
+      description: >-
+        Event sent to the Wallet application to notify an error encountered during the IBAN check process.
+      summary: Notification to the Wallet application of an error during the IBAN check.
+      headers:
+        $ref: "#/components/schemas/HeaderToWallet"
+      payload:
+        $ref: "#/components/schemas/IbanQueueWalletDTO"
+    SaveOKToWallet:
+      contentType: application/json
+      description: >-
+        Event sent to the Wallet application to notify that an IBAN has been saved successfully without any errors.
+      summary: Notification to the Wallet application of a successful IBAN save.
+      headers:
+        $ref: "#/components/schemas/HeaderToWallet"
+      payload:
+        $ref: "#/components/schemas/IbanQueueWalletDTO"
+    SaveUnknownToWallet:
+      contentType: application/json
+      description: >-
+        Event sent to the Wallet application to notify that an IBAN with an unknown PSP has been saved successfully without any errors.
+      summary: Notification to the Wallet application of a successful save of an IBAN with an unknown PSP.
+      headers:
+        $ref: "#/components/schemas/HeaderToWallet"
+      payload:
+        $ref: "#/components/schemas/IbanQueueWalletDTO"
+    SendIbanToWalletError:
+      contentType: application/json
+      description: >-
+        Event sent to the error queue to notify an error encountered while sending the IBAN to the Wallet application.
+      summary: Notification of an error in sending the IBAN to the Wallet application.
+      headers:
+        $ref: "#/components/schemas/ErrorQueueHeader"
+      payload:
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
+    CheckIbanError:
+      contentType: application/json
+      description: >-
+        Event sent to the error queue to notify a 429 error encountered during the IBAN check process.
+      summary: Notification of a 429 error during the IBAN check process.
+      headers:
+        $ref: "#/components/schemas/ErrorQueueHeader"
+      payload:
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
+    SaveIban:
+      contentType: application/json
+      description: >-
+        Event received when an IBAN needs to be saved.
+      summary: Instructs the application to save an IBAN.
+      payload:
+        $ref: "https://raw.githubusercontent.com/pagopa/idpay-wallet/main/specs/asyncapi.yml#/components/schemas/IbanQueueDTO"
+  schemas:
+    HeaderToWallet:
+      type: object
+      properties:
+        kafka_messageKey:
+          type: string
+          description: "Key of the Kafka message"
+          example: "661626073785876cb5aa7601"
+    ErrorQueueHeader:
+      type: object
+      properties:
+        srcType:
+          type: string
+          description: The type of the source of the error message.
+          example: "kafka"
+        srcServer:
+          type: string
+          description: The source server of the error message.
+          example: cstar-u-idpay-evh-ns-00.servicebus.windows.net:9093
+        srcTopic:
+          type: string
+          description: The Kafka topic of the source of the error message.
+          example: idpay-transaction
+        description:
+          type: string
+          description: Description of the error.
+          example: "[TRANSACTION_EVALUATION] An error occurred while updateing the merchant counters"
+        retryable:
+          type: boolean
+          description: Indicates whether the error is retryable or not.
+          example: false
+        stacktrace:
+          type: string
+          description: The stack trace of the error.
+          example: "SocketTimeoutException -> Connection timed out"
+        rootCauseClass:
+          type: string
+          description: "Class name of the root cause exception."
+          example: "java.net.SocketTimeoutException"
+        routeCauseMessage:
+          type: string
+          description: "Message of the root cause exception."
+          example: "Connection timed out"
+    IbanQueueWalletDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: ID of the user
+          example: bcf3651c-d2d3-4998-81a9-5f24302ab674
+        initiativeId:
+          type: string
+          description: ID of the initiative
+          example: 661626073785876cb5aa7601
+        iban:
+          type: string
+          description: IBAN (International Bank Account Number)
+          example: IT60X0542811101000000123456
+        status:
+          type: string
+          description: status
+          example: OK
+        queueDate:
+          type: string
+          description: Date of queuing
+          format: date-time
+          example: "2024-04-10T09:15:30Z"
+        channel:
+          type: string
+          description: Channel of origin
+          example: APP_IO
