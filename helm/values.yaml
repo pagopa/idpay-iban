@@ -60,6 +60,7 @@ microservice-chart:
     APPLICATIONINSIGHTS_PREVIEW_PROFILER_ENABLED: "false"
     CHECKIBAN_SERVICE_CODE: pagopa-checkiban
     PDV_DECRYPT_SERVICE_CODE: pdv-ms-tokenizer
+    HEALTH_MONGO_ENABLED: "false"
 
   externalConfigMapValues:
     idpay-common:
