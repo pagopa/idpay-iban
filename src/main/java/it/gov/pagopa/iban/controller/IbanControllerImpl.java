@@ -29,4 +29,5 @@ public class IbanControllerImpl implements IbanController {
         IbanDTO ibanDTO = ibanService.getIban(iban, userId);
         return new ResponseEntity<>(ibanDTO, HttpStatus.OK);
     }
+    
 }
