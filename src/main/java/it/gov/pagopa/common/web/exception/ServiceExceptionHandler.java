@@ -20,8 +20,10 @@ public class ServiceExceptionHandler {
   private final Map<Class<? extends ServiceException>, HttpStatus> transcodeMap;
 
   public ServiceExceptionHandler(ErrorManager errorManager, Map<Class<? extends ServiceException>, HttpStatus> transcodeMap) {
+
     this.errorManager = errorManager;
     this.transcodeMap = transcodeMap;
+
   }
 
   @SuppressWarnings("squid:S1452")
