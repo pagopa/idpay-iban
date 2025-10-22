@@ -73,27 +73,6 @@
             <artifactId>janino</artifactId>
         </dependency>
 
-        <!-- Security fixes -->
-        <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <!-- Forced to > 1.1.10.3 due to https://nvd.nist.gov/vuln/detail/CVE-2023-34453 -->
-            <version>1.1.10.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <!-- Forced to > 4.11.0 in order to update dependency of okio -->
-            <version>4.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <!-- Forced to > 2.0 due to https://nvd.nist.gov/vuln/detail/CVE-2022-1471 -->
-            <version>2.2</version>
-        </dependency>
-
         <!--TEST-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -152,26 +131,6 @@
                 <version>9.37.3</version>
             </dependency>
 
-            <!-- Netty -->
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http</artifactId>
-                <version>4.1.115.Final</version>
-            </dependency>
-
-            <!-- Jackson Databind -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.18.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>10.1.36</version>
-            </dependency>
-
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
@@ -185,7 +144,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.3</version>
                 <configuration>
                     <argLine>-Duser.timezone=Europe/Rome</argLine>
                     <argLine>-Xmx1024m</argLine>
